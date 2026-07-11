@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { playerApi } from '../../api/client';
 import ImageUpload from '../../components/ImageUpload';
 import type { Player } from '../../types';
+import defaultAvatar from '../../assets/default_player.png';
 
 export default function AdminPlayers() {
   const [players, setPlayers] = useState<Player[]>([]);
@@ -69,7 +70,7 @@ export default function AdminPlayers() {
             <tr key={p.id}>
               <td>{p.name}</td>
               <td>{p.nickname || '-'}</td>
-              <td>{p.avatar ? <img src={p.avatar} alt="" className="avatar-thumb" /> : '-'}</td>
+              <td><img src={p.avatar || defaultAvatar} alt="" className="avatar-thumb" /></td>
               <td className="actions">
                 <button onClick={() => startEdit(p)} className="btn-sm">编辑</button>
                 <button onClick={() => handleDelete(p.id)} className="btn-sm btn-danger">删除</button>
