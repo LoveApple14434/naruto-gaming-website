@@ -4,6 +4,7 @@ export interface User {
   role: 'USER' | 'ADMIN';
   coins: number;
   createdAt?: string;
+  _count?: { userBets: number; redemptions: number };
 }
 
 export interface Player {

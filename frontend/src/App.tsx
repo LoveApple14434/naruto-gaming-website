@@ -18,6 +18,7 @@ import AdminRedemptions from './pages/admin/AdminRedemptions'
 import AdminPlayers from './pages/admin/AdminPlayers'
 import AdminBets from './pages/admin/AdminBets'
 import AdminAnnouncements from './pages/admin/AdminAnnouncements'
+import AdminUsers from './pages/admin/AdminUsers'
 import './App.css'
 
 function ProtectedRoute({ children, adminOnly = false }: { children: React.ReactNode; adminOnly?: boolean }) {
@@ -46,6 +47,7 @@ function App() {
         <Route path="/admin/products" element={<ProtectedRoute adminOnly><AdminProducts /></ProtectedRoute>} />
         <Route path="/admin/hall-of-fame" element={<ProtectedRoute adminOnly><AdminHallOfFame /></ProtectedRoute>} />
         <Route path="/admin/redemptions" element={<ProtectedRoute adminOnly><AdminRedemptions /></ProtectedRoute>} />
+        <Route path="/admin/users" element={<ProtectedRoute adminOnly><AdminUsers /></ProtectedRoute>} />
         <Route path="/admin/announcements" element={<ProtectedRoute adminOnly><AdminAnnouncements /></ProtectedRoute>} />
         <Route path="/admin/players" element={<ProtectedRoute adminOnly><AdminPlayers /></ProtectedRoute>} />
         <Route path="/admin/bets" element={<ProtectedRoute adminOnly><AdminBets /></ProtectedRoute>} />

@@ -11,6 +11,7 @@ import hallOfFameRoutes from './routes/hallOfFame';
 import playerRoutes from './routes/players';
 import redemptionRoutes from './routes/redemptions';
 import uploadRoutes from './routes/upload';
+import userRoutes from './routes/users';
 import { errorHandler } from './middleware/errorHandler';
 
 export const prisma = new PrismaClient();
@@ -37,6 +38,7 @@ app.use('/api/hall-of-fame', hallOfFameRoutes);
 app.use('/api/players', playerRoutes);
 app.use('/api/redemptions', redemptionRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/users', userRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {

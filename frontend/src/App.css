@@ -2068,6 +2068,38 @@
   margin-top: 20px;
 }
 
+/* ─── Admin Users ─── */
+.inline-edit-coins {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.inline-edit-coins .coins-input {
+  width: 100px;
+  padding: 4px 8px;
+  border: 1px solid #f59e0b;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.15);
+}
+
+.inline-edit-coins .coins-input:focus {
+  border-color: #d97706;
+}
+
+.coins-value {
+  font-weight: 700;
+  color: #f59e0b;
+  font-size: 0.95rem;
+}
+
+.admin-page .hint {
+  font-size: 0.85rem;
+  color: #94a3b8;
+}
+
 /* ─── Shared ─── */
 .loading {
   text-align: center;

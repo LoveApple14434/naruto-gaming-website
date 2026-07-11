@@ -167,6 +167,16 @@ export const announcementApi = {
     request<{ success: boolean }>(`/announcements/${id}`, { method: 'DELETE' }),
 };
 
+// Users (admin)
+export const userApi = {
+  list: () => request<import('../types').User[]>('/users'),
+  updateCoins: (id: string, coins: number) =>
+    request<import('../types').User>(`/users/${id}/coins`, {
+      method: 'PUT',
+      body: JSON.stringify({ coins }),
+    }),
+};
+
 // Upload
 export const uploadApi = {
   image: async (file: File): Promise<{ url: string }> => {
