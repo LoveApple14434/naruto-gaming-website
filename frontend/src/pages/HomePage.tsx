@@ -28,7 +28,6 @@ export default function HomePage() {
             {announcements.map(a => (
               <details key={a.id} className="announcement-item">
                 <summary className="announcement-title">
-                  <span className="announcement-badge">NEW</span>
                   {a.title}
                   <span className="announcement-date">
                     {new Date(a.createdAt).toLocaleDateString('zh-CN')}
