@@ -5,6 +5,8 @@ import fs from 'fs';
 import { authenticate, requireAdmin } from '../middleware/auth';
 import { AppError } from '../middleware/errorHandler';
 
+const UPLOADS_PREFIX = process.env.UPLOADS_URL_PREFIX || '';
+
 const router = Router();
 
 const UPLOAD_DIR = path.resolve(__dirname, '../../uploads');
@@ -69,7 +71,7 @@ router.post('/image', authenticate, requireAdmin, upload.single('file'), (req, r
       throw new AppError('文件类型校验失败，请上传有效的图片文件');
     }
 
-    const url = `/uploads/${req.file.filename}`;
+    const url = `${UPLOADS_PREFIX}/uploads/${req.file.filename}`;
     res.json({ url });
   } catch (error) {
     next(error);
