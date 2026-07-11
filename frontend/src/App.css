@@ -1806,6 +1806,159 @@
   margin-left: 4px;
 }
 
+/* ─── Announcement Section (Home) ─── */
+.announcement-section {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  overflow: hidden;
+}
+
+.announcement-header {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: 14px 20px;
+}
+
+.announcement-header h2 {
+  color: #f59e0b;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.announcement-list {
+  border-top: 1px solid #e2e8f0;
+}
+
+.announcement-item {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.announcement-item:last-child {
+  border-bottom: none;
+}
+
+.announcement-item summary {
+  cursor: pointer;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: #1a1a2e;
+  font-size: 0.95rem;
+  list-style: none;
+  transition: background 0.15s;
+}
+
+.announcement-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.announcement-item summary:hover {
+  background: #f8fafc;
+}
+
+.announcement-item summary::before {
+  content: '▶';
+  font-size: 0.7rem;
+  color: #94a3b8;
+  transition: transform 0.2s;
+}
+
+.announcement-item[open] summary::before {
+  transform: rotate(90deg);
+}
+
+.announcement-badge {
+  background: #ef4444;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+}
+
+.announcement-date {
+  margin-left: auto;
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.announcement-content {
+  padding: 0 20px 16px;
+  font-size: 0.9rem;
+  color: #475569;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+/* ─── Admin Announcements ─── */
+.admin-announcements {
+  padding: 24px 0;
+}
+
+.admin-announcements .action-cell {
+  display: flex;
+  gap: 6px;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-group label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+  width: auto;
+  cursor: pointer;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  width: 90%;
+  max-width: 560px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+}
+
+.modal-content h2 {
+  margin-bottom: 20px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
 /* ─── Shared ─── */
 .loading {
   text-align: center;

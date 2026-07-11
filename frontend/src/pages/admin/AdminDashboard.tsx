@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 
 export default function AdminDashboard() {
   const links = [
+    { to: '/admin/announcements', label: '公告管理', icon: '📢' },
     { to: '/admin/players', label: '选手管理', icon: '👤' },
     { to: '/admin/brackets', label: '赛程管理', icon: '🏆' },
     { to: '/admin/bets', label: '竞猜管理', icon: '🎲' },

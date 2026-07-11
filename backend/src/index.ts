@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { PrismaClient } from '@prisma/client';
+import announcementRoutes from './routes/announcements';
 import authRoutes from './routes/auth';
 import bracketRoutes from './routes/brackets';
 import betRoutes from './routes/bets';
@@ -27,6 +28,7 @@ app.use(express.json());
 app.use('/uploads', express.static(path.resolve(__dirname, '../uploads')));
 
 // Routes
+app.use('/api/announcements', announcementRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/brackets', bracketRoutes);
 app.use('/api/bets', betRoutes);

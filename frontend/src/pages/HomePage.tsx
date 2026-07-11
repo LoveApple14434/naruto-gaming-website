@@ -1,11 +1,46 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../store/AuthContext';
+import { announcementApi } from '../api/client';
+import type { Announcement } from '../types';
 
 export default function HomePage() {
   const { user } = useAuth();
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    announcementApi.list()
+      .then(setAnnouncements)
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
 
   return (
     <div className="home-page">
+      {/* ── 公告栏 ── */}
+      {!loading && announcements.length > 0 && (
+        <section className="announcement-section">
+          <div className="announcement-header">
+            <h2>📢 公告栏</h2>
+          </div>
+          <div className="announcement-list">
+            {announcements.map(a => (
+              <details key={a.id} className="announcement-item">
+                <summary className="announcement-title">
+                  <span className="announcement-badge">NEW</span>
+                  {a.title}
+                  <span className="announcement-date">
+                    {new Date(a.createdAt).toLocaleDateString('zh-CN')}
+                  </span>
+                </summary>
+                <div className="announcement-content">{a.content}</div>
+              </details>
+            ))}
+          </div>
+        </section>
+      )}
+
       <section className="hero-section">
         <h1>火影忍者手游比赛平台</h1>
         <p className="hero-sub">竞猜·观赛·兑换 — 成为忍界最强</p>

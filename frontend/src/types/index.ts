@@ -131,6 +131,15 @@ export interface Redemption {
   product?: Product;
 }
 
+export interface Announcement {
+  id: string;
+  title: string;
+  content: string;
+  published: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface HallOfFameEntry {
   id: string;
   playerId: string;

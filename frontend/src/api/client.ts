@@ -155,6 +155,18 @@ export const hallOfFameApi = {
     request<{ success: boolean }>(`/hall-of-fame/${id}`, { method: 'DELETE' }),
 };
 
+// Announcements
+export const announcementApi = {
+  list: () => request<import('../types').Announcement[]>('/announcements'),
+  listAll: () => request<import('../types').Announcement[]>('/announcements/all'),
+  create: (data: { title: string; content: string; published?: boolean }) =>
+    request<import('../types').Announcement>('/announcements', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: string, data: { title?: string; content?: string; published?: boolean }) =>
+    request<import('../types').Announcement>(`/announcements/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (id: string) =>
+    request<{ success: boolean }>(`/announcements/${id}`, { method: 'DELETE' }),
+};
+
 // Upload
 export const uploadApi = {
   image: async (file: File): Promise<{ url: string }> => {
