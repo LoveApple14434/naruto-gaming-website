@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { useAuth } from '../store/AuthContext';
 import { announcementApi } from '../api/client';
 import type { Announcement } from '../types';
@@ -33,7 +35,11 @@ export default function HomePage() {
                     {new Date(a.createdAt).toLocaleDateString('zh-CN')}
                   </span>
                 </summary>
-                <div className="announcement-content">{a.content}</div>
+                <div className="announcement-content">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {a.content}
+                  </ReactMarkdown>
+                </div>
               </details>
             ))}
           </div>

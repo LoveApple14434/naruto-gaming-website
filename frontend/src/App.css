@@ -1893,7 +1893,116 @@
   font-size: 0.9rem;
   color: #475569;
   line-height: 1.7;
-  white-space: pre-wrap;
+  text-align: left;
+}
+
+.announcement-content h1,
+.announcement-content h2,
+.announcement-content h3,
+.announcement-content h4 {
+  margin: 16px 0 8px;
+  color: #1a1a2e;
+  font-weight: 700;
+}
+
+.announcement-content h1 { font-size: 1.25rem; }
+.announcement-content h2 { font-size: 1.1rem; }
+.announcement-content h3 { font-size: 1rem; }
+
+.announcement-content p {
+  margin: 0 0 8px;
+  text-align: left;
+}
+
+.announcement-content ul,
+.announcement-content ol {
+  margin: 0 0 8px;
+  padding-left: 24px;
+}
+
+.announcement-content li {
+  margin-bottom: 4px;
+  text-align: left;
+}
+
+.announcement-content blockquote {
+  margin: 8px 0;
+  padding: 8px 16px;
+  border-left: 4px solid #f59e0b;
+  background: #fffbeb;
+  border-radius: 0 8px 8px 0;
+  color: #92400e;
+}
+
+.announcement-content code {
+  background: #f1f5f9;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.85em;
+  font-family: 'Courier New', monospace;
+  color: #d97706;
+}
+
+.announcement-content pre {
+  background: #1a1a2e;
+  color: #e2e8f0;
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 8px 0;
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.announcement-content pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+.announcement-content table {
+  border-collapse: collapse;
+  margin: 8px 0;
+  width: 100%;
+  font-size: 0.85rem;
+}
+
+.announcement-content th,
+.announcement-content td {
+  border: 1px solid #e2e8f0;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.announcement-content th {
+  background: #f8fafc;
+  font-weight: 600;
+}
+
+.announcement-content hr {
+  border: none;
+  border-top: 1px solid #e2e8f0;
+  margin: 16px 0;
+}
+
+.announcement-content a {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.announcement-content a:hover {
+  text-decoration: underline;
+}
+
+.announcement-content img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 8px 0;
+}
+
+.announcement-content strong {
+  color: #1a1a2e;
 }
 
 /* ─── Admin Announcements ─── */
