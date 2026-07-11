@@ -43,7 +43,7 @@ router.get('/:id', async (req, res, next) => {
 const createProductSchema = z.object({
   name: z.string().min(1).max(100),
   description: z.string().optional().nullable(),
-  imageUrl: z.string().url().optional().nullable(),
+  imageUrl: z.string().optional().nullable(),
   price: z.number().int().positive(),
   stock: z.number().int().min(0),
 });

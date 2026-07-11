@@ -8,7 +8,7 @@ const router = Router();
 
 const createPlayerSchema = z.object({
   name: z.string().min(1).max(50),
-  avatar: z.string().url().optional().nullable(),
+  avatar: z.string().optional().nullable(),
   nickname: z.string().max(50).optional().nullable(),
 });
 

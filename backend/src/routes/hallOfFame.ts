@@ -37,7 +37,7 @@ const createEntrySchema = z.object({
   playerId: z.string(),
   title: z.string().min(1).max(100),
   description: z.string().optional().nullable(),
-  imageUrl: z.string().url().optional().nullable(),
+  imageUrl: z.string().optional().nullable(),
   season: z.string().optional().nullable(),
   order: z.number().int().default(0),
 });
