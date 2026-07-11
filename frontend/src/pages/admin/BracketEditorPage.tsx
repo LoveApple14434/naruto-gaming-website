@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { bracketApi, playerApi } from '../../api/client';
-import type { Bracket, Player, BracketNode, ResultSlot, Connection, CanvasItem } from '../../types';
+import type { Bracket, Player, BracketNode, ResultSlot, CanvasItem } from '../../types';
 
 interface DragState {
   type: 'node' | 'slot' | 'canvas-item' | 'player' | 'new-node' | 'new-slot' | 'new-text';

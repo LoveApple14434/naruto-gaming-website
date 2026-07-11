@@ -49,8 +49,6 @@ export default function BetsPage() {
 
   if (loading) return <div className="loading">加载中...</div>;
 
-  const selectedBracket = brackets.find(b => b.id === selectedBracketId);
-
   return (
     <div className="bets-page">
       <h1>赛事竞猜</h1>
