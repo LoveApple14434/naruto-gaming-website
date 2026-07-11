@@ -14,7 +14,7 @@ export default function Layout() {
     <div className="app-layout">
       <header className="app-header">
         <div className="header-inner">
-          <img src="/assests/naruto-icon.jpeg"></img>
+          <img src="/naruto/assests/naruto-icon.jpeg"></img>
           <Link to="/" className="logo">火影忍者</Link>
           <nav className="nav-links">
             <Link to="/brackets">赛事</Link>
