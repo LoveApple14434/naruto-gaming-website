@@ -4,10 +4,9 @@ import { uploadApi } from '../api/client';
 interface Props {
   value: string;
   onChange: (url: string) => void;
-  placeholder?: string;
 }
 
-export default function ImageUpload({ value, onChange, placeholder }: Props) {
+export default function ImageUpload({ value, onChange }: Props) {
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -28,21 +27,15 @@ export default function ImageUpload({ value, onChange, placeholder }: Props) {
 
   return (
     <div className="image-upload">
-      <input type="file" accept="image/*" onChange={handleFile} ref={inputRef} disabled={uploading} />
-      {uploading && <span className="upload-hint">上传中...</span>}
-      <div className="image-upload-row">
-        <input
-          type="text"
-          value={value}
-          onChange={e => onChange(e.target.value)}
-          placeholder={placeholder || '图片 URL，或点击上传'}
-        />
-        {value && (
-          <div className="image-preview">
-            <img src={value} alt="preview" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-          </div>
-        )}
-      </div>
+      <label className="image-upload-btn">
+        <input type="file" accept="image/*" onChange={handleFile} ref={inputRef} disabled={uploading} />
+        {uploading ? '上传中...' : '选择图片'}
+      </label>
+      {value && (
+        <div className="image-preview">
+          <img src={value} alt="preview" onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+        </div>
+      )}
     </div>
   );
 }

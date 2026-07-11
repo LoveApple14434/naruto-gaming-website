@@ -87,7 +87,7 @@ export default function AdminHallOfFame() {
         <input placeholder="描述" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
         <input placeholder="赛季" value={form.season} onChange={e => setForm(f => ({ ...f, season: e.target.value }))} />
         <input type="number" placeholder="排序" value={form.order} onChange={e => setForm(f => ({ ...f, order: Number(e.target.value) }))} />
-        <ImageUpload value={form.imageUrl} onChange={v => setForm(f => ({ ...f, imageUrl: v }))} placeholder="图片" />
+        <ImageUpload value={form.imageUrl} onChange={v => setForm(f => ({ ...f, imageUrl: v }))} />
         <div>
           {editing ? (
             <>
