@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { bracketApi, betApi } from '../../api/client';
+import { calcOdds } from '../../utils/betUtils';
 import type { Bracket, Bet } from '../../types';
 
 export default function AdminBets() {
   const [brackets, setBrackets] = useState<Bracket[]>([]);
   const [selectedBracket, setSelectedBracket] = useState('');
+  const [bracket, setBracket] = useState<Bracket | null>(null);
   const [bets, setBets] = useState<Bet[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -17,33 +19,43 @@ export default function AdminBets() {
     }).catch(console.error).finally(() => setLoading(false));
   }, []);
 
-  const loadBets = (bracketId: string) => {
+  const loadBracketData = (bracketId: string) => {
     if (!bracketId) return;
-    betApi.listByBracket(bracketId).then(setBets).catch(console.error);
+    Promise.all([
+      bracketApi.get(bracketId),
+      betApi.listByBracket(bracketId),
+    ]).then(([b, betsData]) => {
+      setBracket(b);
+      setBets(betsData);
+    }).catch(console.error);
   };
 
-  useEffect(() => { if (selectedBracket) loadBets(selectedBracket); }, [selectedBracket]);
+  useEffect(() => { if (selectedBracket) loadBracketData(selectedBracket); }, [selectedBracket]);
 
   const handleCreate = async () => {
     if (!selectedBracket) return;
-    await betApi.create(selectedBracket, form);
-    setForm({ nodeId: '', title: '', oddsPlayer1: 1, oddsPlayer2: 1 });
-    loadBets(selectedBracket);
+    try {
+      await betApi.create(selectedBracket, form);
+      setForm({ nodeId: '', title: '', oddsPlayer1: 1, oddsPlayer2: 1 });
+      loadBracketData(selectedBracket);
+    } catch (e: any) { alert(e.message); }
   };
 
   const handleClose = async (id: string) => {
-    await betApi.close(id);
-    loadBets(selectedBracket);
+    try {
+      await betApi.close(id);
+      loadBracketData(selectedBracket);
+    } catch (e: any) { alert(e.message); }
   };
 
   const handleSettle = async (id: string) => {
     const result = prompt('输入结果：WINNER_PLAYER_1, WINNER_PLAYER_2, DRAW');
     if (!result || !['WINNER_PLAYER_1', 'WINNER_PLAYER_2', 'DRAW'].includes(result)) return;
-    await betApi.settle(id, { result });
-    loadBets(selectedBracket);
+    try {
+      await betApi.settle(id, { result });
+      loadBracketData(selectedBracket);
+    } catch (e: any) { alert(e.message); }
   };
-
-  const bracket = brackets.find(b => b.id === selectedBracket);
 
   if (loading) return <div className="loading">加载中...</div>;
 
@@ -52,6 +64,7 @@ export default function AdminBets() {
       <h1>竞猜管理</h1>
 
       <div className="form-inline">
+        <label className="form-label">选择赛程：</label>
         <select value={selectedBracket} onChange={e => setSelectedBracket(e.target.value)}>
           {brackets.map(b => <option key={b.id} value={b.id}>{b.title}</option>)}
         </select>
@@ -60,6 +73,7 @@ export default function AdminBets() {
       {selectedBracket && (
         <>
           <div className="form-grid" style={{ marginTop: 16 }}>
+            <label className="form-label">关联比赛：</label>
             <select value={form.nodeId} onChange={e => setForm(f => ({ ...f, nodeId: e.target.value }))}>
               <option value="">选择比赛</option>
               {bracket?.nodes.map(n => (
@@ -69,21 +83,21 @@ export default function AdminBets() {
               ))}
             </select>
             <input placeholder="标题" value={form.title} onChange={e => setForm(f => ({ ...f, title: e.target.value }))} />
-            <input type="number" step="0.1" placeholder="选手1赔率" value={form.oddsPlayer1} onChange={e => setForm(f => ({ ...f, oddsPlayer1: Number(e.target.value) }))} />
-            <input type="number" step="0.1" placeholder="选手2赔率" value={form.oddsPlayer2} onChange={e => setForm(f => ({ ...f, oddsPlayer2: Number(e.target.value) }))} />
+            <span className="hint">赔率将根据投注量自动计算</span>
             <button onClick={handleCreate} className="btn-primary">创建竞猜</button>
           </div>
 
           <table className="admin-table">
             <thead>
-              <tr><th>标题</th><th>状态</th><th>投注总额</th><th>操作</th></tr>
+              <tr><th>标题</th><th>状态</th><th>投注额 P1/P2</th><th>动态赔率</th><th>操作</th></tr>
             </thead>
             <tbody>
               {bets.map(b => (
                 <tr key={b.id}>
                   <td>{b.title}</td>
                   <td><span className={`status-badge status-${b.status.toLowerCase()}`}>{b.status}</span></td>
-                  <td>🪙 {b.totalBetsP1 + b.totalBetsP2}</td>
+                  <td>{b.totalBetsP1} / {b.totalBetsP2}</td>
+                  <td>{(() => { const o = calcOdds(b.totalBetsP1, b.totalBetsP2); return `${o.p1} / ${o.p2}`; })()}</td>
                   <td className="actions">
                     {b.status === 'OPEN' && (
                       <button onClick={() => handleClose(b.id)} className="btn-sm">关闭</button>

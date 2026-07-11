@@ -583,6 +583,219 @@
   margin-bottom: 8px;
 }
 
+.bet-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.bet-total {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.bet-place-form {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 12px;
+  margin: 8px 0;
+}
+
+.bet-pick-buttons {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.pick-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.pick-btn input { display: none; }
+
+.pick-btn.active {
+  border-color: #f59e0b;
+  background: #fffbeb;
+  color: #92400e;
+}
+
+.pick-btn:hover {
+  border-color: #cbd5e1;
+}
+
+.bet-amount-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+}
+
+.bet-amount-row input {
+  width: 100px;
+  padding: 6px 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.bet-coins-hint {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.bet-actions-row {
+  display: flex;
+  gap: 8px;
+}
+
+.bet-actions {
+  margin-top: 8px;
+}
+
+/* ─── Bets Page ─── */
+.bets-page h1 {
+  margin-bottom: 8px;
+}
+
+.bets-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+.bet-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.bet-card-header h4 {
+  font-size: 0.95rem;
+}
+
+.bet-match-info {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 12px;
+}
+
+.bet-vs {
+  font-weight: 500;
+}
+
+.bet-odds-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.odds-box {
+  flex: 1;
+  text-align: center;
+  padding: 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+
+.odds-label {
+  display: block;
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.odds-value {
+  display: block;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #f59e0b;
+}
+
+.odds-divider {
+  color: #94a3b8;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.bet-closed-hint {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #92400e;
+  background: #fef3c7;
+  padding: 8px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.bet-total-row {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.settled-bets {
+  grid-column: 1 / -1;
+}
+
+.settled-bets summary {
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #64748b;
+  padding: 8px 0;
+}
+
+.bet-card.settled {
+  opacity: 0.7;
+  margin-top: 8px;
+}
+
+.my-bet-info {
+  background: #eff6ff;
+  border: 1px solid #93c5fd;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  color: #1e40af;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.my-bet-info .status-badge {
+  font-size: 0.75rem;
+}
+
+.bet-result-display {
+  text-align: center;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #166534;
+  padding: 8px;
+  background: #dcfce7;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
 /* ─── Shop ─── */
 .shop-page h1 {
   margin-bottom: 8px;
@@ -861,6 +1074,13 @@
   margin-bottom: 24px;
 }
 
+.form-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+  white-space: nowrap;
+}
+
 .form-inline input, .form-inline select {
   padding: 8px 12px;
   border: 1px solid #cbd5e1;
@@ -919,6 +1139,24 @@
 .toolbar-actions {
   display: flex;
   gap: 8px;
+  align-items: center;
+}
+
+.zoom-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 8px;
+  padding-left: 8px;
+  border-left: 1px solid #e2e8f0;
+}
+
+.zoom-level {
+  font-size: 0.8rem;
+  color: #64748b;
+  min-width: 36px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
 }
 
 .editor-body {
@@ -957,6 +1195,18 @@
   border-color: #f59e0b;
 }
 
+.player-chip.derived {
+  border-left: 3px solid #f59e0b;
+  background: #fffbeb;
+}
+
+.player-chip.derived small {
+  display: block;
+  font-size: 0.7rem;
+  color: #b45309;
+  margin-top: 2px;
+}
+
 .canvas-container {
   flex: 1;
   position: relative;
@@ -967,6 +1217,8 @@
   background-size: 20px 20px;
   cursor: crosshair;
   min-height: 600px;
+  min-width: 3000px;
+  height: 3000px;
 }
 
 .connections-layer {
@@ -1026,6 +1278,15 @@
   font-weight: 600;
   font-size: 0.85rem;
   color: #475569;
+  cursor: text;
+  min-width: 20px;
+  min-height: 1.2em;
+}
+
+.node-label:hover {
+  background: #f1f5f9;
+  border-radius: 3px;
+  outline: 1px dashed #94a3b8;
 }
 
 .node-outcomes {
@@ -1050,6 +1311,19 @@
 
 .outcome-btn:hover {
   opacity: 0.8;
+}
+
+.outcome-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.outcome-btn:disabled:hover {
+  opacity: 0.4;
+}
+
+.outcome-btn.used {
+  box-shadow: inset 0 0 0 2px #fff;
 }
 
 .outcome-btn.loser {
@@ -1133,6 +1407,14 @@
   font-size: 0.85rem;
   color: #92400e;
   margin-bottom: 8px;
+  cursor: text;
+}
+
+.slot-header > span:hover {
+  background: #fef3c7;
+  border-radius: 3px;
+  outline: 1px dashed #f59e0b;
+  padding: 0 2px;
 }
 
 .slot-players {
@@ -1175,6 +1457,13 @@
   color: #1e40af;
   flex: 1;
   word-break: break-word;
+  cursor: text;
+}
+
+.canvas-item-content:hover {
+  background: #dbeafe;
+  border-radius: 3px;
+  outline: 1px dashed #93c5fd;
 }
 
 .connecting-hint {
@@ -1190,6 +1479,89 @@
   font-weight: 600;
   z-index: 50;
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.inline-edit {
+  background: #fff;
+  border: 1px solid #f59e0b;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: inherit;
+  font-family: inherit;
+  color: inherit;
+  outline: none;
+  min-width: 40px;
+  width: 100%;
+}
+
+.inline-edit:focus {
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.2);
+}
+
+/* ─── Image Upload ─── */
+.image-upload {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.image-upload input[type="file"] {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.image-upload-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.image-upload-row input[type="text"] {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.image-preview {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  flex-shrink: 0;
+}
+
+.image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.upload-hint {
+  font-size: 0.8rem;
+  color: #f59e0b;
+  font-weight: 500;
+}
+
+.editor-toast {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  animation: toast-in 0.2s ease;
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .properties-panel {
@@ -1241,6 +1613,190 @@
 
 .prop-section.hint p {
   margin-bottom: 8px;
+}
+
+/* ─── Bracket Graphical View (Read-only) ─── */
+.bracket-graphical-view {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: auto;
+  background-image:
+    radial-gradient(circle, #cbd5e1 1px, transparent 1px);
+  background-size: 20px 20px;
+  min-height: 400px;
+  max-height: 70vh;
+  position: relative;
+}
+
+.view-canvas {
+  position: relative;
+  min-width: 3000px;
+  min-height: 2000px;
+  height: 2000px;
+}
+
+.view-connections {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.view-node {
+  position: absolute;
+  width: 240px;
+  background: #fff;
+  border: 2px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 12px;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.view-node-header {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #475569;
+  margin-bottom: 8px;
+}
+
+.view-node-players {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.view-player {
+  padding: 4px 8px;
+  background: #f8fafc;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.view-player.winner {
+  background: #dcfce7;
+  color: #166534;
+  font-weight: 600;
+}
+
+.view-vs {
+  text-align: center;
+  color: #94a3b8;
+  font-weight: 700;
+  font-size: 0.75rem;
+}
+
+.view-node-result {
+  font-size: 0.75rem;
+  color: #166534;
+  font-weight: 600;
+  text-align: center;
+  padding: 4px;
+  background: #dcfce7;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
+.view-slot {
+  position: absolute;
+  width: 200px;
+  background: #fffbeb;
+  border: 2px solid #f59e0b;
+  border-radius: 10px;
+  padding: 12px;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.view-slot-header {
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #92400e;
+  margin-bottom: 8px;
+}
+
+.view-slot-players {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.view-slot-player {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.8rem;
+  color: #92400e;
+}
+
+.view-slot-player.pending {
+  background: #f1f5f9;
+  border: 1px dashed #94a3b8;
+  color: #64748b;
+}
+
+.view-slot-empty {
+  font-size: 0.8rem;
+  color: #d97706;
+}
+
+.view-canvas-item {
+  position: absolute;
+  background: #f0f9ff;
+  border: 2px dashed #93c5fd;
+  border-radius: 8px;
+  padding: 12px;
+  z-index: 10;
+  font-size: 0.85rem;
+  color: #1e40af;
+  word-break: break-word;
+}
+
+/* ─── Editor Slot Assignments ─── */
+.slot-assignments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.slot-player-tag {
+  background: #fef3c7;
+  border: 1px solid #f59e0b;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.8rem;
+  color: #92400e;
+}
+
+.slot-player-tag.pending {
+  background: #f1f5f9;
+  border: 1px dashed #94a3b8;
+  color: #64748b;
+}
+
+.slot-empty {
+  font-size: 0.8rem;
+  color: #d97706;
+}
+
+.slot-capacity {
+  font-size: 0.7rem;
+  color: #b45309;
+  text-align: right;
+}
+
+.slot-pending {
+  font-size: 0.65rem;
+  color: #94a3b8;
+  margin-left: 4px;
 }
 
 /* ─── Shared ─── */

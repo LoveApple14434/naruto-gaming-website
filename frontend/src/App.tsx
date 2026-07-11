@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage'
 import LoginPage from './pages/LoginPage'
 import BracketListPage from './pages/BracketListPage'
 import BracketViewPage from './pages/BracketViewPage'
+import BetsPage from './pages/BetsPage'
 import BracketEditorPage from './pages/admin/BracketEditorPage'
 import ShopPage from './pages/ShopPage'
 import HallOfFamePage from './pages/HallOfFamePage'
@@ -34,6 +35,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/brackets" element={<BracketListPage />} />
         <Route path="/brackets/:id" element={<BracketViewPage />} />
+        <Route path="/bets" element={<BetsPage />} />
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/hall-of-fame" element={<HallOfFamePage />} />
         <Route path="/my-bets" element={<ProtectedRoute><MyBetsPage /></ProtectedRoute>} />

@@ -3,17 +3,21 @@ import { z } from 'zod';
 import { prisma } from '../index';
 import { authenticate, requireAdmin } from '../middleware/auth';
 import { validate } from '../middleware/validate';
-import { distributeResults } from '../services/bracketEngine';
 import { AppError } from '../middleware/errorHandler';
 
 const router = Router();
 
 // ─── 赛程 CRUD ───
 
-// 获取所有赛程列表
-router.get('/', async (_req, res, next) => {
+// 获取所有赛程列表（支持 ?status=PUBLISHED 过滤）
+router.get('/', async (req, res, next) => {
   try {
+    const where: Record<string, unknown> = {};
+    if (req.query.status) {
+      where.status = req.query.status;
+    }
     const brackets = await prisma.bracket.findMany({
+      where,
       include: { _count: { select: { nodes: true } } },
       orderBy: { createdAt: 'desc' },
     });
@@ -30,7 +34,7 @@ router.get('/:id', async (req, res, next) => {
       where: { id: req.params.id },
       include: {
         nodes: { include: { player1: true, player2: true, incomingConnections: true, outgoingConnections: true } },
-        resultSlots: { include: { winner: true, loser: true, incomingConnections: true } },
+        resultSlots: { include: { assignments: { include: { player: true } }, incomingConnections: true } },
         canvasItems: true,
       },
     });
@@ -202,6 +206,18 @@ const createConnectionSchema = z.object({
 
 router.post('/connections', authenticate, requireAdmin, validate(createConnectionSchema), async (req, res, next) => {
   try {
+    // 禁止创建重复方向的连线
+    if (req.body.sourceNodeId) {
+      const existing = await prisma.connection.findFirst({
+        where: {
+          sourceNodeId: req.body.sourceNodeId,
+          outcome: req.body.outcome,
+        },
+      });
+      if (existing) {
+        throw new AppError('该方向已有连线，请先删除再重新连接');
+      }
+    }
     const conn = await prisma.connection.create({ data: req.body });
     res.status(201).json(conn);
   } catch (error) {
@@ -261,43 +277,65 @@ router.delete('/canvas-items/:itemId', authenticate, requireAdmin, async (req, r
   }
 });
 
-// ─── 设定比赛结果（管理员）、自动分发 ───
+// ─── 直接分配选手到结果槽 ───
 
-const setResultSchema = z.object({
-  winnerId: z.string(),
-  loserId: z.string(),
-});
-
-router.put('/nodes/:nodeId/result', authenticate, requireAdmin, validate(setResultSchema), async (req, res, next) => {
+router.post('/:id/result-slots/:slotId/assign', authenticate, requireAdmin, async (req, res, next) => {
   try {
-    const { winnerId, loserId } = req.body;
+    const { playerId } = req.body;
+    if (!playerId) throw new AppError('缺少选手 ID');
 
-    const node = await prisma.bracketNode.findUnique({
-      where: { id: req.params.nodeId },
-      include: { outgoingConnections: true },
+    const slot = await prisma.resultSlot.findUnique({
+      where: { id: req.params.slotId },
+      include: { assignments: true },
     });
-    if (!node) throw new AppError('比赛节点不存在', 404);
+    if (!slot) throw new AppError('结果槽不存在', 404);
+    if (slot.assignments.length >= slot.capacity) throw new AppError('结果槽已满');
 
-    // 更新本节点结果
-    await prisma.bracketNode.update({
-      where: { id: req.params.nodeId },
-      data: { winnerId, loserId },
+    const existing = slot.assignments.find(a => a.playerId === playerId);
+    if (existing) throw new AppError('该选手已在结果槽中');
+
+    const assignment = await prisma.slotAssignment.create({
+      data: { slotId: req.params.slotId, playerId },
+      include: { player: true },
     });
 
-    // 自动分发胜者/败者到后续节点或结果槽
-    await distributeResults(req.params.nodeId, winnerId, loserId, node.outgoingConnections);
-
-    // 重新获取更新后的赛程完整数据
-    const updatedBracket = await prisma.bracket.findUnique({
-      where: { id: node.bracketId },
+    // 返回完整赛程
+    const bracket = await prisma.bracket.findUnique({
+      where: { id: req.params.id },
       include: {
         nodes: { include: { player1: true, player2: true, incomingConnections: true, outgoingConnections: true } },
-        resultSlots: { include: { winner: true, loser: true, incomingConnections: true } },
+        resultSlots: { include: { assignments: { include: { player: true } }, incomingConnections: true } },
         canvasItems: true,
       },
     });
 
-    res.json(updatedBracket);
+    res.status(201).json(bracket);
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.delete('/:id/result-slots/:slotId/assign/:playerId', authenticate, requireAdmin, async (req, res, next) => {
+  try {
+    await prisma.slotAssignment.delete({
+      where: {
+        slotId_playerId: {
+          slotId: req.params.slotId,
+          playerId: req.params.playerId,
+        },
+      },
+    });
+
+    const bracket = await prisma.bracket.findUnique({
+      where: { id: req.params.id },
+      include: {
+        nodes: { include: { player1: true, player2: true, incomingConnections: true, outgoingConnections: true } },
+        resultSlots: { include: { assignments: { include: { player: true } }, incomingConnections: true } },
+        canvasItems: true,
+      },
+    });
+
+    res.json(bracket);
   } catch (error) {
     next(error);
   }

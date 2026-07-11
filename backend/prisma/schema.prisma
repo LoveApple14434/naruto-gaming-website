@@ -59,9 +59,8 @@ model Player {
   matchAsPlayer1 BracketNode[] @relation("Player1Matches")
   matchAsPlayer2 BracketNode[] @relation("Player2Matches")
 
-  // 作为胜者/败者被分配的结果槽
-  winnerSlots ResultSlot[]  @relation("WinnerSlot")
-  loserSlots  ResultSlot[]  @relation("LoserSlot")
+  // 被分配到结果槽
+  slotAssignments SlotAssignment[]
 
   hallOfFameEntries HallOfFame[]
 
@@ -109,30 +108,35 @@ model BracketNode {
   @@map("bracket_nodes")
 }
 
-// ─── 结果槽 ───
+// ─── 结果槽（冠军/亚军/四强等称号）───
 model ResultSlot {
-  id          String  @id @default(uuid())
-  bracketId   String
-  name        String
-  capacity    Int
-  order       Int
-  x           Float
-  y           Float
+  id        String  @id @default(uuid())
+  bracketId String
+  name      String
+  capacity  Int
+  order     Int
+  x         Float
+  y         Float
 
-  bracket     Bracket  @relation(fields: [bracketId], references: [id], onDelete: Cascade)
-
-  // 槽中实际放置的人员
-  winnerId    String?
-  loserId     String?
-  winner      Player?  @relation("WinnerSlot", fields: [winnerId], references: [id], onDelete: SetNull)
-  loser       Player?  @relation("LoserSlot", fields: [loserId], references: [id], onDelete: SetNull)
-
-  // 从哪些比赛连入
-  // 作为源连出
-  outgoingConnections Connection[] @relation("ConnectionSlotSource")
+  bracket     Bracket           @relation(fields: [bracketId], references: [id], onDelete: Cascade)
+  assignments SlotAssignment[]
   incomingConnections Connection[] @relation("ConnectionSlotTarget")
+  outgoingConnections Connection[] @relation("ConnectionSlotSource")
 
   @@map("result_slots")
+}
+
+// ─── 选手-结果槽 分配 ───
+model SlotAssignment {
+  id        String @id @default(uuid())
+  slotId    String
+  playerId  String
+
+  slot   ResultSlot @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  player Player     @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@unique([slotId, playerId])
+  @@map("slot_assignments")
 }
 
 // ─── 连线 ───

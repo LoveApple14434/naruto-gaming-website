@@ -1,15 +1,19 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { bracketApi } from '../api/client';
+import { useAuth } from '../store/AuthContext';
 import type { Bracket } from '../types';
 
 export default function BracketListPage() {
+  const { user } = useAuth();
   const [brackets, setBrackets] = useState<Bracket[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    bracketApi.list().then(setBrackets).catch(console.error).finally(() => setLoading(false));
-  }, []);
+    // 普通用户只看到已发布的赛程
+    const query = !user || user.role !== 'ADMIN' ? '?status=PUBLISHED' : '';
+    bracketApi.list(query).then(setBrackets).catch(console.error).finally(() => setLoading(false));
+  }, [user]);
 
   if (loading) return <div className="loading">加载中...</div>;
 

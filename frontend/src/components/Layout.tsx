@@ -17,6 +17,7 @@ export default function Layout() {
           <Link to="/" className="logo">🦊 火影忍者</Link>
           <nav className="nav-links">
             <Link to="/brackets">赛事</Link>
+            <Link to="/bets">竞猜</Link>
             <Link to="/shop">商城</Link>
             <Link to="/hall-of-fame">名人堂</Link>
             {user && (

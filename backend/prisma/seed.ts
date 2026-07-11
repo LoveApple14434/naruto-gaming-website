@@ -67,6 +67,54 @@ async function main() {
   ]);
   console.log(`  ✅ 商品: ${products.length} 个`);
 
+  // 创建示例赛程（草稿）
+  const bracket = await prisma.bracket.create({
+    data: {
+      title: '第1届忍界格斗大赛',
+      nodes: {
+        create: [
+          { x: 100, y: 100, label: '半决赛 A', player1Id: players[0].id, player2Id: players[1].id },
+          { x: 100, y: 300, label: '半决赛 B', player1Id: players[2].id, player2Id: players[3].id },
+          { x: 500, y: 200, label: '决赛' },
+        ],
+      },
+      resultSlots: {
+        create: [
+          { name: '冠军', capacity: 1, order: 1, x: 900, y: 150 },
+          { name: '亚军', capacity: 1, order: 2, x: 900, y: 280 },
+        ],
+      },
+    },
+  });
+
+  // 创建连线：半决赛A胜者→决赛，半决赛B胜者→决赛
+  const bracketData = await prisma.bracket.findUnique({
+    where: { id: bracket.id },
+    include: { nodes: true, resultSlots: true },
+  });
+  if (bracketData) {
+    const semiA = bracketData.nodes.find(n => n.label === '半决赛 A');
+    const semiB = bracketData.nodes.find(n => n.label === '半决赛 B');
+    const final = bracketData.nodes.find(n => n.label === '决赛');
+    const champ = bracketData.resultSlots.find(s => s.name === '冠军');
+    const runner = bracketData.resultSlots.find(s => s.name === '亚军');
+    if (semiA && final) {
+      await prisma.connection.create({ data: { sourceNodeId: semiA.id, targetNodeId: final.id, outcome: 'WINNER' } });
+      await prisma.connection.create({ data: { sourceNodeId: semiA.id, targetNodeId: final.id, outcome: 'LOSER' } });
+    }
+    if (semiB && final) {
+      await prisma.connection.create({ data: { sourceNodeId: semiB.id, targetNodeId: final.id, outcome: 'WINNER' } });
+      await prisma.connection.create({ data: { sourceNodeId: semiB.id, targetNodeId: final.id, outcome: 'LOSER' } });
+    }
+    if (final && champ) {
+      await prisma.connection.create({ data: { sourceNodeId: final.id, targetSlotId: champ.id, outcome: 'WINNER' } });
+    }
+    if (final && runner) {
+      await prisma.connection.create({ data: { sourceNodeId: final.id, targetSlotId: runner.id, outcome: 'LOSER' } });
+    }
+  }
+  console.log(`  ✅ 示例赛程: ${bracket.title}`);
+
   // 创建名人堂条目
   const hofPlayers = await prisma.player.findMany({ take: 4 });
   for (let i = 0; i < hofPlayers.length; i++) {

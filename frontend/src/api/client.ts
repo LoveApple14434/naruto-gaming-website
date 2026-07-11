@@ -60,7 +60,7 @@ export const playerApi = {
 
 // Brackets
 export const bracketApi = {
-  list: () => request<import('../types').Bracket[]>('/brackets'),
+  list: (query?: string) => request<import('../types').Bracket[]>(`/brackets${query ?? ''}`),
   get: (id: string) => request<import('../types').Bracket>(`/brackets/${id}`),
   create: (title?: string) =>
     request<import('../types').Bracket>('/brackets', { method: 'POST', body: JSON.stringify({ title }) }),
@@ -79,8 +79,6 @@ export const bracketApi = {
     request<import('../types').BracketNode>(`/brackets/nodes/${nodeId}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteNode: (nodeId: string) =>
     request<{ success: boolean }>(`/brackets/nodes/${nodeId}`, { method: 'DELETE' }),
-  setResult: (nodeId: string, data: { winnerId: string; loserId: string }) =>
-    request<import('../types').Bracket>(`/brackets/nodes/${nodeId}/result`, { method: 'PUT', body: JSON.stringify(data) }),
   // Result slots
   createSlot: (bracketId: string, data: { name: string; capacity?: number; order?: number; x: number; y: number }) =>
     request<import('../types').ResultSlot>(`/brackets/${bracketId}/result-slots`, { method: 'POST', body: JSON.stringify(data) }),
@@ -88,6 +86,10 @@ export const bracketApi = {
     request<import('../types').ResultSlot>(`/brackets/result-slots/${slotId}`, { method: 'PUT', body: JSON.stringify(data) }),
   deleteSlot: (slotId: string) =>
     request<{ success: boolean }>(`/brackets/result-slots/${slotId}`, { method: 'DELETE' }),
+  assignToSlot: (bracketId: string, slotId: string, playerId: string) =>
+    request<import('../types').Bracket>(`/brackets/${bracketId}/result-slots/${slotId}/assign`, { method: 'POST', body: JSON.stringify({ playerId }) }),
+  removeFromSlot: (bracketId: string, slotId: string, playerId: string) =>
+    request<import('../types').Bracket>(`/brackets/${bracketId}/result-slots/${slotId}/assign/${playerId}`, { method: 'DELETE' }),
   // Connections
   createConnection: (data: { sourceNodeId?: string; sourceSlotId?: string; targetNodeId?: string; targetSlotId?: string; outcome: string }) =>
     request<import('../types').Connection>('/brackets/connections', { method: 'POST', body: JSON.stringify(data) }),
@@ -151,4 +153,23 @@ export const hallOfFameApi = {
     request<import('../types').HallOfFameEntry>(`/hall-of-fame/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   delete: (id: string) =>
     request<{ success: boolean }>(`/hall-of-fame/${id}`, { method: 'DELETE' }),
+};
+
+// Upload
+export const uploadApi = {
+  image: async (file: File): Promise<{ url: string }> => {
+    const token = getToken();
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await fetch(`${API_BASE}/upload/image`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: formData,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: '上传失败' }));
+      throw new Error(err.error || `HTTP ${res.status}`);
+    }
+    return res.json();
+  },
 };

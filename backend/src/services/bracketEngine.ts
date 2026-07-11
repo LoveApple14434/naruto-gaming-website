@@ -44,18 +44,18 @@ async function propagatePlayer(conn: Connection, playerId: string): Promise<void
     // 两个位置都已满，忽略（可扩展为日志/告警）
   }
 
-  // 目标是一个结果槽
+  // 目标是一个结果槽 — 将选手添加到槽中（不去重，允许多人进入同一槽位）
   if (conn.targetSlotId) {
-    const outcome = conn.outcome; // 'WINNER' | 'LOSER'
-    if (outcome === 'WINNER') {
-      await prisma.resultSlot.update({
-        where: { id: conn.targetSlotId },
-        data: { winnerId: playerId },
-      });
-    } else {
-      await prisma.resultSlot.update({
-        where: { id: conn.targetSlotId },
-        data: { loserId: playerId },
+    const slot = await prisma.resultSlot.findUnique({
+      where: { id: conn.targetSlotId },
+      include: { assignments: true },
+    });
+    if (!slot) return;
+
+    // 不超过容量
+    if (slot.assignments.length < slot.capacity) {
+      await prisma.slotAssignment.create({
+        data: { slotId: conn.targetSlotId, playerId },
       });
     }
   }

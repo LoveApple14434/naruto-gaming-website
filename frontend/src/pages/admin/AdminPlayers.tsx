@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { playerApi } from '../../api/client';
+import ImageUpload from '../../components/ImageUpload';
 import type { Player } from '../../types';
 
 export default function AdminPlayers() {
@@ -48,7 +49,7 @@ export default function AdminPlayers() {
       <div className="form-inline">
         <input placeholder="选手名称" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
         <input placeholder="昵称（可选）" value={form.nickname} onChange={e => setForm(f => ({ ...f, nickname: e.target.value }))} />
-        <input placeholder="头像URL（可选）" value={form.avatar} onChange={e => setForm(f => ({ ...f, avatar: e.target.value }))} />
+        <ImageUpload value={form.avatar} onChange={v => setForm(f => ({ ...f, avatar: v }))} placeholder="头像（可选）" />
         {editing ? (
           <>
             <button onClick={handleUpdate} className="btn-primary">更新</button>

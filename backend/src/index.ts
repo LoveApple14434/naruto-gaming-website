@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
 import { PrismaClient } from '@prisma/client';
 import authRoutes from './routes/auth';
 import bracketRoutes from './routes/brackets';
@@ -8,6 +9,7 @@ import productRoutes from './routes/products';
 import hallOfFameRoutes from './routes/hallOfFame';
 import playerRoutes from './routes/players';
 import redemptionRoutes from './routes/redemptions';
+import uploadRoutes from './routes/upload';
 import { errorHandler } from './middleware/errorHandler';
 
 export const prisma = new PrismaClient();
@@ -21,6 +23,9 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// 静态文件：上传的图片
+app.use('/uploads', express.static(path.resolve(__dirname, '../uploads')));
+
 // Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/brackets', bracketRoutes);
@@ -29,6 +34,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/hall-of-fame', hallOfFameRoutes);
 app.use('/api/players', playerRoutes);
 app.use('/api/redemptions', redemptionRoutes);
+app.use('/api/upload', uploadRoutes);
 
 // Health check
 app.get('/api/health', (_req, res) => {

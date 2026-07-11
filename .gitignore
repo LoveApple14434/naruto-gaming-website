@@ -35,5 +35,9 @@ Thumbs.db
 # Prisma
 backend/prisma/migrations/
 
+# Uploads
+backend/uploads/*
+!backend/uploads/.gitkeep
+
 # Coverage
 coverage/

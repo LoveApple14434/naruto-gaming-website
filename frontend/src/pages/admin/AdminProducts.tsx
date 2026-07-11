@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { productApi } from '../../api/client';
+import ImageUpload from '../../components/ImageUpload';
 import type { Product } from '../../types';
 
 export default function AdminProducts() {
@@ -74,7 +75,7 @@ export default function AdminProducts() {
         <input placeholder="描述" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
         <input type="number" placeholder="价格（竞猜币）" value={form.price} onChange={e => setForm(f => ({ ...f, price: Number(e.target.value) }))} />
         <input type="number" placeholder="库存" value={form.stock} onChange={e => setForm(f => ({ ...f, stock: Number(e.target.value) }))} />
-        <input placeholder="图片URL" value={form.imageUrl} onChange={e => setForm(f => ({ ...f, imageUrl: e.target.value }))} />
+        <ImageUpload value={form.imageUrl} onChange={v => setForm(f => ({ ...f, imageUrl: v }))} placeholder="图片" />
         <div>
           {editing ? (
             <>

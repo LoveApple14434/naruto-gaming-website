@@ -41,6 +41,13 @@ export interface BracketNode {
   outgoingConnections?: Connection[];
 }
 
+export interface SlotAssignment {
+  id: string;
+  slotId: string;
+  playerId: string;
+  player?: Player;
+}
+
 export interface ResultSlot {
   id: string;
   bracketId: string;
@@ -49,10 +56,7 @@ export interface ResultSlot {
   order: number;
   x: number;
   y: number;
-  winnerId: string | null;
-  loserId: string | null;
-  winner?: Player | null;
-  loser?: Player | null;
+  assignments: SlotAssignment[];
   incomingConnections?: Connection[];
 }
 
