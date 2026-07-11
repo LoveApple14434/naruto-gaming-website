@@ -1,0 +1,261 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum BracketStatus {
+  DRAFT
+  PUBLISHED
+  FINISHED
+}
+
+enum MatchResult {
+  WINNER_PLAYER_1
+  WINNER_PLAYER_2
+  DRAW
+}
+
+enum BetStatus {
+  OPEN
+  CLOSED
+  SETTLED
+}
+
+// ─── 用户 ───
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  role      Role     @default(USER)
+  coins     Int      @default(1000)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userBets      UserBet[]
+  redemptions   Redemption[]
+
+  @@map("users")
+}
+
+// ─── 选手（参赛者） ───
+model Player {
+  id        String   @id @default(uuid())
+  name      String
+  avatar    String?
+  nickname  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // 作为参赛者参加的节点
+  matchAsPlayer1 BracketNode[] @relation("Player1Matches")
+  matchAsPlayer2 BracketNode[] @relation("Player2Matches")
+
+  // 作为胜者/败者被分配的结果槽
+  winnerSlots ResultSlot[]  @relation("WinnerSlot")
+  loserSlots  ResultSlot[]  @relation("LoserSlot")
+
+  hallOfFameEntries HallOfFame[]
+
+  @@map("players")
+}
+
+// ─── 赛程 ───
+model Bracket {
+  id        String        @id @default(uuid())
+  title     String
+  status    BracketStatus @default(DRAFT)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  nodes       BracketNode[]
+  resultSlots ResultSlot[]
+  canvasItems CanvasItem[]
+  bets        Bet[]
+
+  @@map("brackets")
+}
+
+// ─── 比赛节点（一局） ───
+model BracketNode {
+  id            String  @id @default(uuid())
+  bracketId     String
+  x             Float
+  y             Float
+  label         String?
+  player1Id     String?
+  player2Id     String?
+  winnerId      String?
+  loserId       String?
+
+  bracket       Bracket  @relation(fields: [bracketId], references: [id], onDelete: Cascade)
+  player1       Player?  @relation("Player1Matches", fields: [player1Id], references: [id], onDelete: SetNull)
+  player2       Player?  @relation("Player2Matches", fields: [player2Id], references: [id], onDelete: SetNull)
+
+  // 从哪些来源连入
+  incomingConnections Connection[] @relation("ConnectionTarget")
+  // 连向哪些目标
+  bets                Bet[]
+  outgoingConnections Connection[] @relation("ConnectionSource")
+
+  @@map("bracket_nodes")
+}
+
+// ─── 结果槽 ───
+model ResultSlot {
+  id          String  @id @default(uuid())
+  bracketId   String
+  name        String
+  capacity    Int
+  order       Int
+  x           Float
+  y           Float
+
+  bracket     Bracket  @relation(fields: [bracketId], references: [id], onDelete: Cascade)
+
+  // 槽中实际放置的人员
+  winnerId    String?
+  loserId     String?
+  winner      Player?  @relation("WinnerSlot", fields: [winnerId], references: [id], onDelete: SetNull)
+  loser       Player?  @relation("LoserSlot", fields: [loserId], references: [id], onDelete: SetNull)
+
+  // 从哪些比赛连入
+  // 作为源连出
+  outgoingConnections Connection[] @relation("ConnectionSlotSource")
+  incomingConnections Connection[] @relation("ConnectionSlotTarget")
+
+  @@map("result_slots")
+}
+
+// ─── 连线 ───
+model Connection {
+  id            String  @id @default(uuid())
+  sourceNodeId  String?
+  sourceSlotId  String?
+  targetNodeId  String?
+  targetSlotId  String?
+  outcome       String  // "WINNER" | "LOSER"
+
+  sourceNode    BracketNode? @relation("ConnectionSource", fields: [sourceNodeId], references: [id], onDelete: Cascade)
+  sourceSlot    ResultSlot?  @relation("ConnectionSlotSource", fields: [sourceSlotId], references: [id], onDelete: Cascade)
+  targetNode    BracketNode? @relation("ConnectionTarget", fields: [targetNodeId], references: [id], onDelete: Cascade)
+  targetSlot    ResultSlot?  @relation("ConnectionSlotTarget", fields: [targetSlotId], references: [id], onDelete: Cascade)
+
+  @@map("connections")
+}
+
+// ─── 看板自定义框体 ───
+model CanvasItem {
+  id        String  @id @default(uuid())
+  bracketId String
+  x         Float
+  y         Float
+  width     Float
+  height    Float
+  content   String
+  style     Json?   @default("{}")
+
+  bracket   Bracket @relation(fields: [bracketId], references: [id], onDelete: Cascade)
+
+  @@map("canvas_items")
+}
+
+// ─── 竞猜 ───
+model Bet {
+  id            String    @id @default(uuid())
+  bracketId     String
+  nodeId        String
+  title         String
+  status        BetStatus @default(OPEN)
+  oddsPlayer1   Float?    @default(1.0)
+  oddsPlayer2   Float?    @default(1.0)
+  totalBetsP1   Int       @default(0)
+  totalBetsP2   Int       @default(0)
+  result        MatchResult?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  bracket       Bracket       @relation(fields: [bracketId], references: [id], onDelete: Cascade)
+  node          BracketNode   @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  userBets      UserBet[]
+
+  @@map("bets")
+}
+
+// ─── 用户参与的竞猜 ───
+model UserBet {
+  id        String      @id @default(uuid())
+  userId    String
+  betId     String
+  pick      MatchResult // 用户选了谁赢
+  amount    Int         // 投注币数
+  settled   Boolean     @default(false)
+  payout    Int?        // 结算后获得的币数
+  createdAt DateTime    @default(now())
+
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bet       Bet         @relation(fields: [betId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, betId])
+  @@map("user_bets")
+}
+
+// ─── 商品 ───
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  imageUrl    String?
+  price       Int
+  stock       Int
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  redemptions Redemption[]
+
+  @@map("products")
+}
+
+// ─── 兑换记录 ───
+model Redemption {
+  id        String   @id @default(uuid())
+  userId    String
+  productId String
+  quantity  Int      @default(1)
+  totalCost Int
+  status    String   @default("PENDING") // PENDING | APPROVED | REJECTED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@map("redemptions")
+}
+
+// ─── 名人堂 ───
+model HallOfFame {
+  id          String   @id @default(uuid())
+  playerId    String
+  title       String   // 称号，如 "忍界之神"
+  description String?
+  imageUrl    String?
+  season      String?  // 赛季
+  order       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  player      Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
+
+  @@map("hall_of_fame")
+}
