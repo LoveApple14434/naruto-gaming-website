@@ -1,5 +1,6 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../store/AuthContext';
+import logoIcon from '../assets/naruto-icon.jpeg';
 
 export default function Layout() {
   const { user, logout } = useAuth();
@@ -14,8 +15,10 @@ export default function Layout() {
     <div className="app-layout">
       <header className="app-header">
         <div className="header-inner">
-          <link rel="icon" type="image/jpeg" href="naruto-icon.jpeg" />
-          <Link to="/" className="logo">火影忍者</Link>
+          <Link to="/" className="logo">
+            <img src={logoIcon} alt="" className="logo-icon" />
+            火影忍者
+          </Link>
           <nav className="nav-links">
             <Link to="/brackets">赛事</Link>
             <Link to="/bets">竞猜</Link>
