@@ -27,7 +27,7 @@ export default function Layout() {
             {user && (
               <>
                 <Link to="/my-bets">我的竞猜</Link>
-                {user.role === 'ADMIN' && (
+                {(user.role === 'ADMIN' || user.role === 'MODERATOR') && (
                   <Link to="/admin" className="admin-link">管理后台</Link>
                 )}
               </>

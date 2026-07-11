@@ -1,13 +1,30 @@
 import { useEffect, useState } from 'react';
 import { userApi } from '../../api/client';
+import { useAuth } from '../../store/AuthContext';
 import type { User } from '../../types';
 
+const ROLE_LABELS: Record<string, string> = {
+  USER: '普通用户',
+  MODERATOR: '协助管理员',
+  ADMIN: '管理员',
+};
+
+const ROLE_BADGE: Record<string, string> = {
+  USER: 'status-draft',
+  MODERATOR: 'status-closed',
+  ADMIN: 'status-published',
+};
+
 export default function AdminUsers() {
+  const { user: currentUser } = useAuth();
+  const isAdmin = currentUser?.role === 'ADMIN';
+
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editUserId, setEditUserId] = useState<string | null>(null);
+  const [editCoinUserId, setEditCoinUserId] = useState<string | null>(null);
   const [editCoins, setEditCoins] = useState('');
   const [saving, setSaving] = useState(false);
+  const [changingRole, setChangingRole] = useState<string | null>(null);
 
   const load = () => {
     setLoading(true);
@@ -19,18 +36,18 @@ export default function AdminUsers() {
 
   useEffect(load, []);
 
-  const startEdit = (user: User) => {
-    setEditUserId(user.id);
+  const startEditCoins = (user: User) => {
+    setEditCoinUserId(user.id);
     setEditCoins(String(user.coins));
   };
 
-  const cancelEdit = () => {
-    setEditUserId(null);
+  const cancelEditCoins = () => {
+    setEditCoinUserId(null);
     setEditCoins('');
   };
 
   const saveCoins = async () => {
-    if (!editUserId) return;
+    if (!editCoinUserId) return;
     const newCoins = parseInt(editCoins, 10);
     if (isNaN(newCoins) || newCoins < 0) {
       alert('请输入有效的非负整数');
@@ -38,13 +55,33 @@ export default function AdminUsers() {
     }
     setSaving(true);
     try {
-      await userApi.updateCoins(editUserId, newCoins);
-      cancelEdit();
+      await userApi.updateCoins(editCoinUserId, newCoins);
+      cancelEditCoins();
       load();
     } catch {
       alert('修改失败');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleRoleChange = async (userId: string, newRole: string) => {
+    if (!isAdmin) return;
+    setChangingRole(userId);
+    try {
+      await fetch(`/naruto/api/users/${userId}/role`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+        body: JSON.stringify({ role: newRole }),
+      });
+      load();
+    } catch {
+      alert('修改角色失败');
+    } finally {
+      setChangingRole(null);
     }
   };
 
@@ -74,12 +111,25 @@ export default function AdminUsers() {
             <tr key={u.id}>
               <td>{u.username}</td>
               <td>
-                <span className={`status-badge ${u.role === 'ADMIN' ? 'status-published' : 'status-draft'}`}>
-                  {u.role === 'ADMIN' ? '管理员' : '用户'}
-                </span>
+                {isAdmin ? (
+                  <select
+                    className="role-select"
+                    value={u.role}
+                    onChange={e => handleRoleChange(u.id, e.target.value)}
+                    disabled={changingRole === u.id || u.id === currentUser?.id}
+                  >
+                    <option value="USER">普通用户</option>
+                    <option value="MODERATOR">协助管理员</option>
+                    <option value="ADMIN">管理员</option>
+                  </select>
+                ) : (
+                  <span className={`status-badge ${ROLE_BADGE[u.role] ?? 'status-draft'}`}>
+                    {ROLE_LABELS[u.role] ?? u.role}
+                  </span>
+                )}
               </td>
               <td>
-                {editUserId === u.id ? (
+                {editCoinUserId === u.id ? (
                   <div className="inline-edit-coins">
                     <input
                       type="number"
@@ -92,7 +142,7 @@ export default function AdminUsers() {
                     <button className="btn-sm" onClick={saveCoins} disabled={saving}>
                       {saving ? '保存中' : '保存'}
                     </button>
-                    <button className="btn-sm" onClick={cancelEdit}>取消</button>
+                    <button className="btn-sm" onClick={cancelEditCoins}>取消</button>
                   </div>
                 ) : (
                   <span className="coins-value">🪙 {u.coins}</span>
@@ -102,8 +152,8 @@ export default function AdminUsers() {
               <td>{u._count?.redemptions ?? '-'}</td>
               <td>{u.createdAt ? new Date(u.createdAt).toLocaleDateString('zh-CN') : '-'}</td>
               <td className="actions">
-                {editUserId !== u.id && (
-                  <button className="btn-sm" onClick={() => startEdit(u)}>修改竞猜币</button>
+                {editCoinUserId !== u.id && (
+                  <button className="btn-sm" onClick={() => startEditCoins(u)}>修改竞猜币</button>
                 )}
               </td>
             </tr>

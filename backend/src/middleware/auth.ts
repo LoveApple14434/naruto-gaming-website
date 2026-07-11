@@ -59,3 +59,14 @@ export function requireAdmin(
   }
   next();
 }
+
+export function requireAdminOrModerator(
+  req: Request,
+  _res: Response,
+  next: NextFunction,
+) {
+  if (req.user?.role !== 'ADMIN' && req.user?.role !== 'MODERATOR') {
+    throw new AppError('需要管理员或协助管理员权限', 403);
+  }
+  next();
+}

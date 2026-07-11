@@ -21,11 +21,12 @@ import AdminAnnouncements from './pages/admin/AdminAnnouncements'
 import AdminUsers from './pages/admin/AdminUsers'
 import './App.css'
 
-function ProtectedRoute({ children, adminOnly = false }: { children: React.ReactNode; adminOnly?: boolean }) {
+function ProtectedRoute({ children, adminOnly = false, moderatorAccess = false }: { children: React.ReactNode; adminOnly?: boolean; moderatorAccess?: boolean }) {
   const { user, loading } = useAuth()
   if (loading) return <div className="loading">加载中...</div>
   if (!user) return <Navigate to="/login" replace />
   if (adminOnly && user.role !== 'ADMIN') return <Navigate to="/" replace />
+  if (moderatorAccess && user.role !== 'ADMIN' && user.role !== 'MODERATOR') return <Navigate to="/" replace />
   return <>{children}</>
 }
 
@@ -41,13 +42,13 @@ function App() {
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/hall-of-fame" element={<HallOfFamePage />} />
         <Route path="/my-bets" element={<ProtectedRoute><MyBetsPage /></ProtectedRoute>} />
-        <Route path="/admin" element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin" element={<ProtectedRoute moderatorAccess><AdminDashboard /></ProtectedRoute>} />
+        <Route path="/admin/users" element={<ProtectedRoute moderatorAccess><AdminUsers /></ProtectedRoute>} />
         <Route path="/admin/brackets" element={<ProtectedRoute adminOnly><AdminBrackets /></ProtectedRoute>} />
         <Route path="/admin/brackets/:id/edit" element={<ProtectedRoute adminOnly><BracketEditorPage /></ProtectedRoute>} />
         <Route path="/admin/products" element={<ProtectedRoute adminOnly><AdminProducts /></ProtectedRoute>} />
         <Route path="/admin/hall-of-fame" element={<ProtectedRoute adminOnly><AdminHallOfFame /></ProtectedRoute>} />
         <Route path="/admin/redemptions" element={<ProtectedRoute adminOnly><AdminRedemptions /></ProtectedRoute>} />
-        <Route path="/admin/users" element={<ProtectedRoute adminOnly><AdminUsers /></ProtectedRoute>} />
         <Route path="/admin/announcements" element={<ProtectedRoute adminOnly><AdminAnnouncements /></ProtectedRoute>} />
         <Route path="/admin/players" element={<ProtectedRoute adminOnly><AdminPlayers /></ProtectedRoute>} />
         <Route path="/admin/bets" element={<ProtectedRoute adminOnly><AdminBets /></ProtectedRoute>} />

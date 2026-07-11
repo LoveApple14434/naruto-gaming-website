@@ -85,7 +85,7 @@ export default function HomePage() {
             </div>
             <div className="dash-card">
               <span className="dash-label">角色</span>
-              <span className="dash-value">{user.role === 'ADMIN' ? '管理员' : '普通用户'}</span>
+              <span className="dash-value">{user.role === 'ADMIN' ? '管理员' : user.role === 'MODERATOR' ? '协助管理员' : '普通用户'}</span>
             </div>
           </div>
         </section>

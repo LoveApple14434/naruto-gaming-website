@@ -44,6 +44,20 @@ async function main() {
   });
   console.log(`  ✅ 用户: ${user2.username}`);
 
+  // 创建协助管理员
+  const modPassword = await bcrypt.hash('mod123', 10);
+  const moderator = await prisma.user.upsert({
+    where: { username: 'kakashi' },
+    update: {},
+    create: {
+      username: 'kakashi',
+      password: modPassword,
+      role: 'MODERATOR',
+      coins: 10000,
+    },
+  });
+  console.log(`  ✅ 协助管理员: ${moderator.username}`);
+
   // 创建选手
   const players = await Promise.all([
     prisma.player.create({ data: { name: '漩涡鸣人', nickname: '九尾人柱力' } }),
