@@ -29,24 +29,46 @@ export default function ProfilePage() {
     setSaving(false);
   };
 
+  /** 客户端压缩图片至最大 800px 边长、500KB 以下，避免 413 错误 */
+  const compressImage = (file: File): Promise<Blob> => new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 800;
+      let { width, height } = img;
+      if (width > height && width > MAX) { height = Math.round(height * MAX / width); width = MAX; }
+      else if (height > MAX) { width = Math.round(width * MAX / height); height = MAX; }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(img, 0, 0, width, height);
+      canvas.toBlob(b => b ? resolve(b) : reject(new Error('压缩失败')), 'image/jpeg', 0.8);
+    };
+    img.onerror = () => reject(new Error('图片加载失败'));
+    img.src = URL.createObjectURL(file);
+  });
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // 本地预览
-    const reader = new FileReader();
-    reader.onload = (ev) => setPreview(ev.target?.result as string);
-    reader.readAsDataURL(file);
+    // 压缩后再预览
+    const compressed = await compressImage(file);
+    const previewUrl = URL.createObjectURL(compressed);
+    setPreview(previewUrl);
 
     setUploading(true);
     setMsg('');
     try {
-      await profileApi.uploadAvatar(file);
+      const compressedFile = new File([compressed], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
+      await profileApi.uploadAvatar(compressedFile);
       setPreview(null);
+      URL.revokeObjectURL(previewUrl);
       await refreshUser();
       setMsg('✅ 头像已更新');
     } catch (e: any) {
       setPreview(null);
+      URL.revokeObjectURL(previewUrl);
       setMsg(`❌ ${e.message}`);
     }
     setUploading(false);
