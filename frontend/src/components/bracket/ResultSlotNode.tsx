@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Handle, Position, type NodeProps } from '@xyflow/react';
+import { Handle, Position, type NodeProps, type Node } from '@xyflow/react';
 import type { Player } from '../../types';
 
 export type ResultSlotNodeData = {
@@ -12,7 +12,9 @@ export type ResultSlotNodeData = {
   onPlayerRemove?: (playerId: string) => void;
 };
 
-function ResultSlotNode({ data, selected }: NodeProps<ResultSlotNodeData>) {
+export type ResultSlotNodeType = Node<ResultSlotNodeData, 'resultSlotNode'>;
+
+function ResultSlotNode({ data, selected }: NodeProps<ResultSlotNodeType>) {
   const { name, capacity, assignments, incomingCount } = data;
   const pendingCount = incomingCount - assignments.length;
 

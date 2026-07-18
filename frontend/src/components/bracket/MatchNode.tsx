@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Handle, Position, type NodeProps } from '@xyflow/react';
+import { Handle, Position, type NodeProps, type Node } from '@xyflow/react';
 import type { Player } from '../../types';
 
 export type MatchNodeData = {
@@ -11,7 +11,9 @@ export type MatchNodeData = {
   onDelete?: () => void;
 };
 
-function MatchNode({ data, selected }: NodeProps<MatchNodeData>) {
+export type MatchNodeType = Node<MatchNodeData, 'matchNode'>;
+
+function MatchNode({ data, selected }: NodeProps<MatchNodeType>) {
   const { label, player1, player2, winnerId } = data;
   const p1Win = winnerId != null && player1 != null && winnerId === player1.id;
   const p2Win = winnerId != null && player2 != null && winnerId === player2.id;

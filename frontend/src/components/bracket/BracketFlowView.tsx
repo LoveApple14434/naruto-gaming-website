@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo } from 'react';
 import {
   ReactFlow,
   Background,
@@ -10,15 +10,15 @@ import {
   type DefaultEdgeOptions,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import MatchNode from './MatchNode';
-import ResultSlotNode from './ResultSlotNode';
-import CanvasItemNode from './CanvasItemNode';
+import MatchNode, { type MatchNodeType } from './MatchNode';
+import ResultSlotNode, { type ResultSlotNodeType } from './ResultSlotNode';
+import CanvasItemNode, { type CanvasItemNodeType } from './CanvasItemNode';
 import type { Bracket } from '../../types';
 
 const nodeTypes: NodeTypes = {
-  matchNode: MatchNode,
-  resultSlotNode: ResultSlotNode,
-  canvasItemNode: CanvasItemNode,
+  matchNode: MatchNode as React.ComponentType,
+  resultSlotNode: ResultSlotNode as React.ComponentType,
+  canvasItemNode: CanvasItemNode as React.ComponentType,
 };
 
 const defaultEdgeOptions: DefaultEdgeOptions = {
@@ -128,10 +128,6 @@ export default function BracketFlowView({ bracket, interactive = false, children
 
     return { nodes: n, edges: e };
   }, [bracket, interactive]);
-
-  const onConnectStart = useCallback(() => {
-    // 只读模式下禁止连接
-  }, []);
 
   return (
     <div className="rf-flow-wrapper">

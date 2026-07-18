@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { type NodeProps } from '@xyflow/react';
+import { type NodeProps, type Node } from '@xyflow/react';
 
 export type CanvasItemNodeData = {
   content: string;
@@ -9,7 +9,9 @@ export type CanvasItemNodeData = {
   onDelete?: () => void;
 };
 
-function CanvasItemNode({ data, selected }: NodeProps<CanvasItemNodeData>) {
+export type CanvasItemNodeType = Node<CanvasItemNodeData, 'canvasItemNode'>;
+
+function CanvasItemNode({ data, selected }: NodeProps<CanvasItemNodeType>) {
   return (
     <div
       className={`rf-node rf-canvas-item ${selected ? 'selected' : ''}`}

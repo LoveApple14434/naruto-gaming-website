@@ -17,15 +17,15 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { bracketApi, playerApi } from '../../api/client';
-import MatchNode from '../../components/bracket/MatchNode';
-import ResultSlotNode from '../../components/bracket/ResultSlotNode';
-import CanvasItemNode from '../../components/bracket/CanvasItemNode';
+import MatchNode, { type MatchNodeType } from '../../components/bracket/MatchNode';
+import ResultSlotNode, { type ResultSlotNodeType } from '../../components/bracket/ResultSlotNode';
+import CanvasItemNode, { type CanvasItemNodeType } from '../../components/bracket/CanvasItemNode';
 import type { Bracket, Player, BracketNode, ResultSlot, CanvasItem } from '../../types';
 
 const nodeTypes: NodeTypes = {
-  matchNode: MatchNode,
-  resultSlotNode: ResultSlotNode,
-  canvasItemNode: CanvasItemNode,
+  matchNode: MatchNode as React.ComponentType,
+  resultSlotNode: ResultSlotNode as React.ComponentType,
+  canvasItemNode: CanvasItemNode as React.ComponentType,
 };
 
 const defaultEdgeOptions: DefaultEdgeOptions = {
@@ -151,8 +151,8 @@ export default function BracketEditorPage() {
     return { nodes: ns, edges: es };
   }, [bracket]);
 
-  const [nodes, setNodes] = useNodesState([]);
-  const [edges, setEdges] = useEdgesState([]);
+  const [nodes, setNodes] = useNodesState<Node>([]);
+  const [edges, setEdges] = useEdgesState<Edge>([]);
 
   useEffect(() => {
     const { nodes: ns, edges: es } = buildNodesAndEdges();
@@ -304,16 +304,6 @@ export default function BracketEditorPage() {
       await bracketApi.updateNode(nodeId, update);
       load();
     } catch (e: any) { setError(e.message || '分配选手失败'); }
-  };
-
-  const handleRemovePlayer = async (nodeId: string, slot: 1 | 2) => {
-    const update: Record<string, null> = {};
-    if (slot === 1) update.player1Id = null;
-    else update.player2Id = null;
-    try {
-      await bracketApi.updateNode(nodeId, update);
-      load();
-    } catch (e: any) { setError(e.message || '移除选手失败'); }
   };
 
   const handleAssignToSlot = async (slotId: string, playerId: string) => {
