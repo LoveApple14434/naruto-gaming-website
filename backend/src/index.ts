@@ -28,6 +28,13 @@ app.use(express.json());
 // 静态文件：上传的图片
 app.use('/uploads', express.static(path.resolve(__dirname, '../uploads')));
 
+// 生产环境：托管前端构建产物
+const frontendDist = path.resolve(__dirname, '../../frontend/dist');
+app.use('/naruto/assets', express.static(path.resolve(frontendDist, 'assets')));
+app.get('/naruto*', (_req, res) => {
+  res.sendFile(path.resolve(frontendDist, 'index.html'));
+});
+
 // Routes
 app.use('/api/announcements', announcementRoutes);
 app.use('/api/auth', authRoutes);

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { bracketApi, betApi } from '../api/client';
 import { useAuth } from '../store/AuthContext';
 import { calcOdds } from '../utils/betUtils';
+import BracketFlowView from '../components/bracket/BracketFlowView';
 import type { Bracket, Bet, UserBet } from '../types';
 
 export default function BracketViewPage() {
@@ -44,18 +45,6 @@ export default function BracketViewPage() {
   if (loading) return <div className="loading">加载中...</div>;
   if (!bracket) return <div className="empty-state">赛程不存在</div>;
 
-  const getNodeCenter = (nodeId: string) => {
-    const node = bracket.nodes.find(n => n.id === nodeId);
-    if (!node) return null;
-    return { x: node.x + 120, y: node.y + 40 };
-  };
-
-  const getSlotCenter = (slotId: string) => {
-    const slot = bracket.resultSlots.find(s => s.id === slotId);
-    if (!slot) return null;
-    return { x: slot.x + 100, y: slot.y + 30 };
-  };
-
   return (
     <div className="bracket-view-page">
       <div className="page-header">
@@ -70,110 +59,8 @@ export default function BracketViewPage() {
         )}
       </div>
 
-      {/* 图形化赛程看板 */}
-      <div className="bracket-graphical-view">
-        <div className="view-canvas">
-          {/* SVG 连线层 */}
-          <svg className="view-connections">
-            {bracket.nodes.flatMap(n =>
-              (n.outgoingConnections ?? []).map(conn => {
-                const source = getNodeCenter(n.id);
-                let target: { x: number; y: number } | null = null;
-                if (conn.targetNodeId) target = getNodeCenter(conn.targetNodeId);
-                else if (conn.targetSlotId) target = getSlotCenter(conn.targetSlotId);
-                if (!source || !target) return null;
-                const color = conn.outcome === 'WINNER' ? '#22c55e' : '#ef4444';
-                const dash = conn.outcome === 'LOSER' ? '5,5' : undefined;
-                return (
-                  <line
-                    key={conn.id}
-                    x1={source.x} y1={source.y}
-                    x2={target.x} y2={target.y}
-                    stroke={color} strokeWidth={2}
-                    strokeDasharray={dash}
-                    markerEnd={`url(#v-arrow-${conn.outcome.toLowerCase()})`}
-                  />
-                );
-              })
-            )}
-            <defs>
-              <marker id="v-arrow-winner" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                <polygon points="0 0, 10 3.5, 0 7" fill="#22c55e" />
-              </marker>
-              <marker id="v-arrow-loser" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                <polygon points="0 0, 10 3.5, 0 7" fill="#ef4444" />
-              </marker>
-            </defs>
-          </svg>
-
-          {/* 比赛节点 */}
-          {bracket.nodes.map(node => (
-            <div
-              key={node.id}
-              className="view-node"
-              style={{ left: node.x, top: node.y }}
-            >
-              <div className="view-node-header">
-                <span>{node.label || ''}</span>
-              </div>
-              <div className="view-node-players">
-                <div className="view-player">
-                  {node.player1?.name || '—'}
-                </div>
-                <div className="view-vs">VS</div>
-                <div className="view-player">
-                  {node.player2?.name || '—'}
-                </div>
-              </div>
-            </div>
-          ))}
-
-          {/* 结果槽 */}
-          {bracket.resultSlots.map(slot => (
-            <div
-              key={slot.id}
-              className="view-slot"
-              style={{ left: slot.x, top: slot.y }}
-            >
-              <div className="view-slot-header">{slot.name}</div>
-              <div className="view-slot-players">
-                {(() => {
-                  const aList = slot.assignments ?? [];
-                  const iConns = slot.incomingConnections ?? [];
-                  const pending = iConns.length - aList.length;
-                  return (
-                    <>
-                      {aList.map(a => (
-                        <span key={a.id} className="view-slot-player">
-                          {a.player?.name}
-                        </span>
-                      ))}
-                      {pending > 0 && Array.from({ length: pending }).map((_, i) => (
-                        <span key={`p-${i}`} className="view-slot-player pending">待定</span>
-                      ))}
-                      {aList.length === 0 && iConns.length === 0 && (
-                        <span className="view-slot-empty">—</span>
-                      )}
-                      <div className="slot-capacity">{aList.length}/{slot.capacity}</div>
-                    </>
-                  );
-                })()}
-              </div>
-            </div>
-          ))}
-
-          {/* 自定义框体 */}
-          {bracket.canvasItems.map(item => (
-            <div
-              key={item.id}
-              className="view-canvas-item"
-              style={{ left: item.x, top: item.y, width: item.width, height: item.height }}
-            >
-              {item.content}
-            </div>
-          ))}
-        </div>
-      </div>
+      {/* React Flow 驱动的赛程看板 */}
+      <BracketFlowView bracket={bracket} />
 
       {/* 竞猜列表 */}
       {bets.length > 0 && (
