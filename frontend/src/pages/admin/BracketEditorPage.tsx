@@ -44,6 +44,19 @@ export default function BracketEditorPage() {
   const [selectedCanvasItem, setSelectedCanvasItem] = useState<CanvasItem | null>(null);
   const [error, setError] = useState('');
 
+  // 本地编辑状态（避免每次按键都触发 API 和全量重新加载）
+  const [editingLabel, setEditingLabel] = useState<string>('');
+  const [editingName, setEditingName] = useState<string>('');
+  const [editingCapacity, setEditingCapacity] = useState<number>(1);
+  const [editingContent, setEditingContent] = useState<string>('');
+
+  // 同步编辑状态到 selected 对象
+  useEffect(() => {
+    if (selectedNode) setEditingLabel(selectedNode.label || '');
+    if (selectedSlot) { setEditingName(selectedSlot.name); setEditingCapacity(selectedSlot.capacity); }
+    if (selectedCanvasItem) setEditingContent(selectedCanvasItem.content);
+  }, [selectedNode, selectedSlot, selectedCanvasItem]);
+
   const load = useCallback(async () => {
     if (!id) return;
     try {
@@ -505,16 +518,33 @@ export default function BracketEditorPage() {
           </ReactFlow>
         </div>
 
-        {/* 属性面板 */}
+        {/* 属性面板 — 使用本地编辑 + 失焦保存，避免卡顿 */}
         <div className="properties-panel">
           {selectedNode && (
             <div className="prop-section">
               <h4>比赛属性</h4>
               <label>标签</label>
-              <input value={selectedNode.label || ''} onChange={async e => {
-                try { await bracketApi.updateNode(selectedNode.id, { label: e.target.value }); load(); }
-                catch (err: any) { setError(err.message); }
-              }} />
+              <input value={editingLabel}
+                onChange={e => {
+                  setEditingLabel(e.target.value);
+                  // 乐观更新本地 bracket 数据，立即刷新 React Flow 节点
+                  if (bracket) {
+                    setBracket({
+                      ...bracket,
+                      nodes: bracket.nodes.map(n =>
+                        n.id === selectedNode.id ? { ...n, label: e.target.value } : n
+                      ),
+                    });
+                  }
+                }}
+                onBlur={async () => {
+                  if (editingLabel !== (selectedNode.label || '')) {
+                    try { await bracketApi.updateNode(selectedNode.id, { label: editingLabel }); }
+                    catch (err: any) { setError(err.message); load(); }
+                  }
+                }}
+                onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
+              />
               <label>选手1</label>
               <select value={selectedNode.player1Id || ''} onChange={e => handleAssignPlayer(selectedNode.id, 1, e.target.value)}>
                 <option value="">—</option>
@@ -526,7 +556,7 @@ export default function BracketEditorPage() {
                 {players.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
               <div className="prop-hint">将选手从侧栏拖入节点可快速分配</div>
-              <div className="prop-hint">点击节点上 W/L 按钮开始连线，然后点击目标节点</div>
+              <div className="prop-hint">从节点底部手柄拖拽到目标完成连线</div>
               <button onClick={() => handleDeleteNode(selectedNode.id)} className="btn-danger btn-block mt-8">删除节点</button>
             </div>
           )}
@@ -534,16 +564,47 @@ export default function BracketEditorPage() {
             <div className="prop-section">
               <h4>结果槽属性</h4>
               <label>名称</label>
-              <input value={selectedSlot.name} onChange={async e => {
-                try { await bracketApi.updateSlot(selectedSlot.id, { name: e.target.value }); load(); }
-                catch (err: any) { setError(err.message);
-                }
-              }} />
+              <input value={editingName}
+                onChange={e => {
+                  setEditingName(e.target.value);
+                  if (bracket) {
+                    setBracket({
+                      ...bracket,
+                      resultSlots: bracket.resultSlots.map(s =>
+                        s.id === selectedSlot.id ? { ...s, name: e.target.value } : s
+                      ),
+                    });
+                  }
+                }}
+                onBlur={async () => {
+                  if (editingName !== selectedSlot.name) {
+                    try { await bracketApi.updateSlot(selectedSlot.id, { name: editingName }); }
+                    catch (err: any) { setError(err.message); load(); }
+                  }
+                }}
+                onKeyDown={e => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
+              />
               <label>容纳人数</label>
-              <input type="number" value={selectedSlot.capacity} onChange={async e => {
-                try { await bracketApi.updateSlot(selectedSlot.id, { capacity: Number(e.target.value) }); load(); }
-                catch (err: any) { setError(err.message); }
-              }} />
+              <input type="number" value={editingCapacity}
+                onChange={e => {
+                  const cap = Math.max(1, Number(e.target.value));
+                  setEditingCapacity(cap);
+                  if (bracket) {
+                    setBracket({
+                      ...bracket,
+                      resultSlots: bracket.resultSlots.map(s =>
+                        s.id === selectedSlot.id ? { ...s, capacity: cap } : s
+                      ),
+                    });
+                  }
+                }}
+                onBlur={async () => {
+                  if (editingCapacity !== selectedSlot.capacity) {
+                    try { await bracketApi.updateSlot(selectedSlot.id, { capacity: editingCapacity }); }
+                    catch (err: any) { setError(err.message); load(); }
+                  }
+                }}
+              />
               <button onClick={() => handleDeleteSlot(selectedSlot.id)} className="btn-danger btn-block mt-8">删除槽位</button>
             </div>
           )}
@@ -551,10 +612,25 @@ export default function BracketEditorPage() {
             <div className="prop-section">
               <h4>框体属性</h4>
               <label>内容</label>
-              <textarea value={selectedCanvasItem.content} onChange={async e => {
-                try { await bracketApi.updateCanvasItem(selectedCanvasItem.id, { content: e.target.value }); load(); }
-                catch (err: any) { setError(err.message); }
-              }} />
+              <textarea value={editingContent}
+                onChange={e => {
+                  setEditingContent(e.target.value);
+                  if (bracket) {
+                    setBracket({
+                      ...bracket,
+                      canvasItems: bracket.canvasItems.map(c =>
+                        c.id === selectedCanvasItem.id ? { ...c, content: e.target.value } : c
+                      ),
+                    });
+                  }
+                }}
+                onBlur={async () => {
+                  if (editingContent !== selectedCanvasItem.content) {
+                    try { await bracketApi.updateCanvasItem(selectedCanvasItem.id, { content: editingContent }); }
+                    catch (err: any) { setError(err.message); load(); }
+                  }
+                }}
+              />
               <button onClick={() => handleDeleteCanvasItem(selectedCanvasItem.id)} className="btn-danger btn-block mt-8">删除框体</button>
             </div>
           )}
@@ -563,7 +639,7 @@ export default function BracketEditorPage() {
               <p>👆 点击节点/槽/框体查看属性</p>
               <p>🔄 拖拽空白区域平移画布</p>
               <p>📦 拖拽移动节点位置</p>
-              <p>🔗 点击节点 W/L 按钮开始连线，再点击目标完成</p>
+              <p>🔗 从节点底部手柄拖拽到目标完成连线</p>
               <p>👤 将选手从侧栏拖入节点或结果槽</p>
               <p>🗑️ 选中后按 Delete/Backspace 删除连线</p>
             </div>
