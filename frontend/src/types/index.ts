@@ -3,6 +3,9 @@ export interface User {
   username: string;
   role: 'USER' | 'MODERATOR' | 'ADMIN';
   coins: number;
+  nickname?: string | null;
+  avatar?: string | null;
+  isNjuStudent?: boolean;
   createdAt?: string;
   _count?: { userBets: number; redemptions: number };
 }

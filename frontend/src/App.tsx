@@ -10,6 +10,7 @@ import BracketEditorPage from './pages/admin/BracketEditorPage'
 import ShopPage from './pages/ShopPage'
 import HallOfFamePage from './pages/HallOfFamePage'
 import MyBetsPage from './pages/MyBetsPage'
+import ProfilePage from './pages/ProfilePage'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminBrackets from './pages/admin/AdminBrackets'
 import AdminProducts from './pages/admin/AdminProducts'
@@ -42,6 +43,7 @@ function App() {
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/hall-of-fame" element={<HallOfFamePage />} />
         <Route path="/my-bets" element={<ProtectedRoute><MyBetsPage /></ProtectedRoute>} />
+        <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute moderatorAccess><AdminDashboard /></ProtectedRoute>} />
         <Route path="/admin/users" element={<ProtectedRoute moderatorAccess><AdminUsers /></ProtectedRoute>} />
         <Route path="/admin/brackets" element={<ProtectedRoute adminOnly><AdminBrackets /></ProtectedRoute>} />

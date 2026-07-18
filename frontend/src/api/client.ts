@@ -177,6 +177,27 @@ export const userApi = {
     }),
 };
 
+// Profile
+export const profileApi = {
+  update: (data: { nickname?: string | null; avatar?: string | null; isNjuStudent?: boolean }) =>
+    request<import('../types').User>('/auth/profile', { method: 'PUT', body: JSON.stringify(data) }),
+  uploadAvatar: async (file: File): Promise<import('../types').User> => {
+    const token = getToken();
+    const formData = new FormData();
+    formData.append('avatar', file);
+    const res = await fetch(`${API_BASE}/auth/avatar`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: formData,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: '上传失败' }));
+      throw new Error(err.error || `HTTP ${res.status}`);
+    }
+    return res.json();
+  },
+};
+
 // Upload
 export const uploadApi = {
   image: async (file: File): Promise<{ url: string }> => {

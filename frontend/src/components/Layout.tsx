@@ -37,7 +37,7 @@ export default function Layout() {
             {user ? (
               <>
                 <span className="coins">🪙 {user.coins}</span>
-                <span className="username">{user.username}</span>
+                <Link to="/profile" className="username" title="个人管理">{user.nickname || user.username}</Link>
                 <button onClick={handleLogout} className="btn-text">退出</button>
               </>
             ) : (

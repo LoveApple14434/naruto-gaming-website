@@ -85,7 +85,60 @@ router.get('/me', authenticate, async (req, res, next) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: req.user!.userId },
-      select: { id: true, username: true, role: true, coins: true, createdAt: true },
+      select: { id: true, username: true, role: true, coins: true, nickname: true, avatar: true, isNjuStudent: true, createdAt: true },
+    });
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// 更新个人信息
+const updateProfileSchema = z.object({
+  nickname: z.string().max(30).optional().nullable(),
+  avatar: z.string().max(500).optional().nullable(),
+  isNjuStudent: z.boolean().optional(),
+});
+
+router.put('/profile', authenticate, validate(updateProfileSchema), async (req, res, next) => {
+  try {
+    const data: Record<string, unknown> = {};
+    if (req.body.nickname !== undefined) data.nickname = req.body.nickname;
+    if (req.body.avatar !== undefined) data.avatar = req.body.avatar;
+    if (req.body.isNjuStudent !== undefined) data.isNjuStudent = req.body.isNjuStudent;
+
+    const user = await prisma.user.update({
+      where: { id: req.user!.userId },
+      data,
+      select: { id: true, username: true, role: true, coins: true, nickname: true, avatar: true, isNjuStudent: true, createdAt: true },
+    });
+    res.json(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// 上传头像
+import multer from 'multer';
+import path from 'path';
+const uploadDir = path.resolve(__dirname, '../../uploads/avatars');
+const avatarStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, uploadDir),
+  filename: (_req, file, cb) => {
+    const ext = path.extname(file.originalname) || '.jpg';
+    cb(null, `avatar-${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`);
+  },
+});
+const uploadAvatar = multer({ storage: avatarStorage, limits: { fileSize: 5 * 1024 * 1024 } });
+
+router.post('/avatar', authenticate, uploadAvatar.single('avatar'), async (req, res, next) => {
+  try {
+    if (!req.file) throw new AppError('请上传图片');
+    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
+    const user = await prisma.user.update({
+      where: { id: req.user!.userId },
+      data: { avatar: avatarUrl },
+      select: { id: true, username: true, role: true, coins: true, nickname: true, avatar: true, isNjuStudent: true, createdAt: true },
     });
     res.json(user);
   } catch (error) {
