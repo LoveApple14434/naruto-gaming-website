@@ -6,20 +6,19 @@ import {
   MiniMap,
   type Node,
   type Edge,
-  type NodeTypes,
   type DefaultEdgeOptions,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import MatchNode, { type MatchNodeType } from './MatchNode';
-import ResultSlotNode, { type ResultSlotNodeType } from './ResultSlotNode';
-import CanvasItemNode, { type CanvasItemNodeType } from './CanvasItemNode';
+import MatchNode from './MatchNode';
+import ResultSlotNode from './ResultSlotNode';
+import CanvasItemNode from './CanvasItemNode';
 import type { Bracket } from '../../types';
 
-const nodeTypes: NodeTypes = {
-  matchNode: MatchNode as React.ComponentType,
-  resultSlotNode: ResultSlotNode as React.ComponentType,
-  canvasItemNode: CanvasItemNode as React.ComponentType,
-};
+const nodeTypes = {
+  matchNode: MatchNode,
+  resultSlotNode: ResultSlotNode,
+  canvasItemNode: CanvasItemNode,
+} as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 const defaultEdgeOptions: DefaultEdgeOptions = {
   type: 'smoothstep',

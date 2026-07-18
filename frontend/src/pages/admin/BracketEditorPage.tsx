@@ -9,7 +9,6 @@ import {
   type Connection,
   type NodeChange,
   type EdgeChange,
-  type NodeTypes,
   type DefaultEdgeOptions,
   Background,
   Controls,
@@ -17,16 +16,16 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { bracketApi, playerApi } from '../../api/client';
-import MatchNode, { type MatchNodeType } from '../../components/bracket/MatchNode';
-import ResultSlotNode, { type ResultSlotNodeType } from '../../components/bracket/ResultSlotNode';
-import CanvasItemNode, { type CanvasItemNodeType } from '../../components/bracket/CanvasItemNode';
+import MatchNode from '../../components/bracket/MatchNode';
+import ResultSlotNode from '../../components/bracket/ResultSlotNode';
+import CanvasItemNode from '../../components/bracket/CanvasItemNode';
 import type { Bracket, Player, BracketNode, ResultSlot, CanvasItem } from '../../types';
 
-const nodeTypes: NodeTypes = {
-  matchNode: MatchNode as React.ComponentType,
-  resultSlotNode: ResultSlotNode as React.ComponentType,
-  canvasItemNode: CanvasItemNode as React.ComponentType,
-};
+const nodeTypes = {
+  matchNode: MatchNode,
+  resultSlotNode: ResultSlotNode,
+  canvasItemNode: CanvasItemNode,
+} as any; // eslint-disable-line @typescript-eslint/no-explicit-any
 
 const defaultEdgeOptions: DefaultEdgeOptions = {
   type: 'smoothstep',
@@ -151,8 +150,8 @@ export default function BracketEditorPage() {
     return { nodes: ns, edges: es };
   }, [bracket]);
 
-  const [nodes, setNodes] = useNodesState<Node>([]);
-  const [edges, setEdges] = useEdgesState<Edge>([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
 
   useEffect(() => {
     const { nodes: ns, edges: es } = buildNodesAndEdges();
@@ -163,7 +162,7 @@ export default function BracketEditorPage() {
   // ─── 节点/边变更持久化 ───
 
   const handleNodesChange = useCallback((changes: NodeChange[]) => {
-    setNodes(changes);
+    onNodesChange(changes);
     // 拖拽结束后持久化位置
     for (const change of changes) {
       if (change.type === 'position' && change.dragging === false && change.position) {
@@ -186,16 +185,16 @@ export default function BracketEditorPage() {
         }
       }
     }
-  }, [setNodes, bracket]);
+  }, [onNodesChange, bracket]);
 
   const handleEdgesChange = useCallback((changes: EdgeChange[]) => {
-    setEdges(changes);
+    onEdgesChange(changes);
     for (const change of changes) {
       if (change.type === 'remove') {
         bracketApi.deleteConnection(change.id).catch(console.error);
       }
     }
-  }, [setEdges]);
+  }, [onEdgesChange]);
 
   // ─── 连线创建（从手柄拖拽连线） ───
 
