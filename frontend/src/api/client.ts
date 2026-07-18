@@ -181,11 +181,11 @@ export const userApi = {
 export const profileApi = {
   update: (data: { nickname?: string | null; avatar?: string | null; isNjuStudent?: boolean }) =>
     request<import('../types').User>('/auth/profile', { method: 'PUT', body: JSON.stringify(data) }),
-  uploadAvatar: async (file: File): Promise<import('../types').User> => {
+  uploadAvatar: async (file: File): Promise<{ url: string }> => {
     const token = getToken();
     const formData = new FormData();
     formData.append('avatar', file);
-    const res = await fetch(`${API_BASE}/auth/avatar`, {
+    const res = await fetch(`${API_BASE}/upload/avatar`, {
       method: 'POST',
       headers: token ? { Authorization: `Bearer ${token}` } : {},
       body: formData,

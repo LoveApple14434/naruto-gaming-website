@@ -26,10 +26,15 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// ── 兼容 /naruto/api 前缀（开发环境通过 Vite proxy 重写，生产环境 nginx 也会重写） ──
-// 如果请求以 /naruto/api 开头，将 URL 改写为 /api 再交由后续路由处理
-app.use(/^\/naruto\/api/, (req, _res, next) => {
-  req.url = req.originalUrl.replace(/^\/naruto\/api/, '/api');
+// ── 兼容 /naruto 前缀（开发/生产环境都能工作） ──
+// 如果请求以 /naruto/api 开头，Express 自动剥离前缀，我们补上 /api
+app.use('/naruto/api', (req, _res, next) => {
+  req.url = '/api' + req.url;
+  next();
+});
+// /naruto/uploads → /uploads（与前端 API_BASE 和 UPLOADS_PREFIX 保持一致）
+app.use('/naruto/uploads', (req, _res, next) => {
+  req.url = '/uploads' + req.url;
   next();
 });
 

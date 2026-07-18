@@ -118,32 +118,4 @@ router.put('/profile', authenticate, validate(updateProfileSchema), async (req, 
   }
 });
 
-// 上传头像
-import multer from 'multer';
-import path from 'path';
-const uploadDir = path.resolve(__dirname, '../../uploads/avatars');
-const avatarStorage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, uploadDir),
-  filename: (_req, file, cb) => {
-    const ext = path.extname(file.originalname) || '.jpg';
-    cb(null, `avatar-${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`);
-  },
-});
-const uploadAvatar = multer({ storage: avatarStorage, limits: { fileSize: 5 * 1024 * 1024 } });
-
-router.post('/avatar', authenticate, uploadAvatar.single('avatar'), async (req, res, next) => {
-  try {
-    if (!req.file) throw new AppError('请上传图片');
-    const avatarUrl = `/uploads/avatars/${req.file.filename}`;
-    const user = await prisma.user.update({
-      where: { id: req.user!.userId },
-      data: { avatar: avatarUrl },
-      select: { id: true, username: true, role: true, coins: true, nickname: true, avatar: true, isNjuStudent: true, createdAt: true },
-    });
-    res.json(user);
-  } catch (error) {
-    next(error);
-  }
-});
-
 export default router;

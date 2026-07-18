@@ -78,4 +78,22 @@ router.post('/image', authenticate, requireAdmin, upload.single('file'), (req, r
   }
 });
 
+// 用户上传头像（任意登录用户）
+router.post('/avatar', authenticate, upload.single('avatar'), (req, res, next) => {
+  try {
+    if (!req.file) throw new AppError('未选择文件');
+
+    const ext = path.extname(req.file.filename).toLowerCase();
+    if (!validateMagicNumber(req.file.path, ext)) {
+      fs.unlink(req.file.path, () => {});
+      throw new AppError('文件类型校验失败，请上传有效的图片文件');
+    }
+
+    const url = `${UPLOADS_PREFIX}/uploads/${req.file.filename}`;
+    res.json({ url });
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default router;

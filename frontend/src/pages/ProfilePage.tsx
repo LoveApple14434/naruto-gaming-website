@@ -61,9 +61,12 @@ export default function ProfilePage() {
     setMsg('');
     try {
       const compressedFile = new File([compressed], file.name.replace(/\.[^.]+$/, '.jpg'), { type: 'image/jpeg' });
-      await profileApi.uploadAvatar(compressedFile);
+      // 1. 上传图片 → 获取 URL
+      const { url } = await profileApi.uploadAvatar(compressedFile);
       setPreview(null);
       URL.revokeObjectURL(previewUrl);
+      // 2. 更新个人信息中的头像字段
+      await profileApi.update({ avatar: url });
       await refreshUser();
       setMsg('✅ 头像已更新');
     } catch (e: any) {
