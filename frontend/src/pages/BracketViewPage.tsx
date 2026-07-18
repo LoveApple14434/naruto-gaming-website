@@ -72,9 +72,19 @@ export default function BracketViewPage() {
               <div key={bet.id} className="bet-card">
                 <h4>{bet.title}</h4>
                 <div className="bet-odds">
-                  {(() => { const o = calcOdds(bet.totalBetsP1, bet.totalBetsP2); return (<>
-                  <span>{bet.node?.player1?.name || '选手1'}: {o.p1}{o.p1 !== '—' ? 'x' : ''}</span>
-                  <span>{bet.node?.player2?.name || '选手2'}: {o.p2}{o.p2 !== '—' ? 'x' : ''}</span>
+                  {(() => { const o = calcOdds(bet.totalBetsP1, bet.totalBetsP2); const p1 = bet.node?.player1; const p2 = bet.node?.player2; return (<>
+                  <span className="bet-player">
+                    <span className="bet-player-avatar">
+                      {p1?.avatar ? <img src={p1.avatar} alt={p1.name} /> : <span className="bet-avatar-fallback">{p1 ? p1.name.charAt(0).toUpperCase() : '?'}</span>}
+                    </span>
+                    {p1?.name || '选手1'}: {o.p1}{o.p1 !== '—' ? 'x' : ''}
+                  </span>
+                  <span className="bet-player">
+                    <span className="bet-player-avatar">
+                      {p2?.avatar ? <img src={p2.avatar} alt={p2.name} /> : <span className="bet-avatar-fallback">{p2 ? p2.name.charAt(0).toUpperCase() : '?'}</span>}
+                    </span>
+                    {p2?.name || '选手2'}: {o.p2}{o.p2 !== '—' ? 'x' : ''}
+                  </span>
                   </>); })()}
                 </div>
                 <div className="bet-meta">
@@ -108,11 +118,17 @@ export default function BracketViewPage() {
                         <label className={`pick-btn ${betPick === 'WINNER_PLAYER_1' ? 'active' : ''}`}>
                           <input type="radio" name="pick" value="WINNER_PLAYER_1" checked={betPick === 'WINNER_PLAYER_1'}
                             onChange={() => setBetPick('WINNER_PLAYER_1')} />
+                          <span className="bet-player-avatar bet-avatar-sm">
+                            {bet.node?.player1?.avatar ? <img src={bet.node.player1.avatar} alt={bet.node.player1.name} /> : <span className="bet-avatar-fallback">{bet.node?.player1 ? bet.node.player1.name.charAt(0).toUpperCase() : '?'}</span>}
+                          </span>
                           {bet.node?.player1?.name || '选手1'}
                         </label>
                         <label className={`pick-btn ${betPick === 'WINNER_PLAYER_2' ? 'active' : ''}`}>
                           <input type="radio" name="pick" value="WINNER_PLAYER_2" checked={betPick === 'WINNER_PLAYER_2'}
                             onChange={() => setBetPick('WINNER_PLAYER_2')} />
+                          <span className="bet-player-avatar bet-avatar-sm">
+                            {bet.node?.player2?.avatar ? <img src={bet.node.player2.avatar} alt={bet.node.player2.name} /> : <span className="bet-avatar-fallback">{bet.node?.player2 ? bet.node.player2.name.charAt(0).toUpperCase() : '?'}</span>}
+                          </span>
                           {bet.node?.player2?.name || '选手2'}
                         </label>
                       </div>
