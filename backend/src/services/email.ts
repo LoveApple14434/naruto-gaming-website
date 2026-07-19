@@ -12,7 +12,7 @@ if (!mailAddress || !mailAuthCode) {
 /** 延迟创建的 transporter（确保 .env 已加载） */
 function getTransporter() {
   return nodemailer.createTransport({
-    host: 'smtp.qq.com',
+    host: 'smtp.exmail.qq.com',
     port: 465,
     secure: true,
     auth: {
