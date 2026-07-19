@@ -53,6 +53,10 @@ model User {
   nickname    String?
   avatar      String?
   isNjuStudent Boolean @default(false)
+  njuEmail            String?   // 南大邮箱地址
+  njuEmailVerified    Boolean   @default(false) // 邮箱是否已验证
+  njuVerificationCode       String?   // 验证码
+  njuVerificationCodeExpires DateTime? // 验证码过期时间
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

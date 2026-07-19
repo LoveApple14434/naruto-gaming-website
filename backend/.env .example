@@ -2,3 +2,5 @@ DATABASE_URL="postgresql://postgres:postgres@localhost:5432/naruto_gaming?schema
 JWT_SECRET="naruto-gaming-jwt-secret-change-in-production"
 PORT=3001
 FRONTEND_URL="http://localhost:5173"
+MAIL_ADDRESS="no-reply@example.com"
+MAIL_AUTH_CODE="YourAuthCode"

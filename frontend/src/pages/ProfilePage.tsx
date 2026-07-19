@@ -2,6 +2,8 @@ import { useState, useRef } from 'react';
 import { useAuth } from '../store/AuthContext';
 import { profileApi } from '../api/client';
 
+const EMAIL_DOMAINS = ['@smail.nju.edu.cn', '@nju.edu.cn'] as const;
+
 export default function ProfilePage() {
   const { user, refreshUser } = useAuth();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -12,6 +14,16 @@ export default function ProfilePage() {
   const [uploading, setUploading] = useState(false);
   const [msg, setMsg] = useState('');
   const [preview, setPreview] = useState<string | null>(null);
+
+  // 南大邮箱验证状态
+  const [showVerification, setShowVerification] = useState(false);
+  const [emailAccount, setEmailAccount] = useState('');
+  const [emailDomain, setEmailDomain] = useState<string>('@smail.nju.edu.cn');
+  const [verificationCode, setVerificationCode] = useState('');
+  const [sendingCode, setSendingCode] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+  const [codeSent, setCodeSent] = useState(false);
+  const [countdown, setCountdown] = useState(0);
 
   if (!user) return null;
 
@@ -27,6 +39,80 @@ export default function ProfilePage() {
       setMsg(`❌ ${e.message}`);
     }
     setSaving(false);
+  };
+
+  // 发送验证码
+  const handleSendCode = async () => {
+    if (!emailAccount.trim()) {
+      setMsg('❌ 请输入邮箱账号名');
+      return;
+    }
+    setSendingCode(true);
+    setMsg('');
+    setCodeSent(false);
+    try {
+      const res = await profileApi.sendVerificationCode({
+        emailAccount: emailAccount.trim(),
+        emailDomain,
+      });
+      setMsg(`✅ ${res.message}`);
+      setCodeSent(true);
+      // 60 秒倒计时
+      setCountdown(60);
+      const timer = setInterval(() => {
+        setCountdown(prev => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } catch (e: any) {
+      setMsg(`❌ ${e.message}`);
+    }
+    setSendingCode(false);
+  };
+
+  // 提交验证码
+  const handleVerify = async () => {
+    if (!verificationCode.trim() || verificationCode.length !== 6) {
+      setMsg('❌ 请输入 6 位验证码');
+      return;
+    }
+    setVerifying(true);
+    setMsg('');
+    try {
+      const updatedUser = await profileApi.verifyEmail(verificationCode.trim());
+      setIsNjuStudent(true);
+      setShowVerification(false);
+      setEmailAccount('');
+      setVerificationCode('');
+      setCodeSent(false);
+      await refreshUser();
+      setMsg('✅ 南大学生身份已验证通过！');
+    } catch (e: any) {
+      setMsg(`❌ ${e.message}`);
+    }
+    setVerifying(false);
+  };
+
+  // 勾选/取消南大学生
+  const handleNjuCheckbox = (checked: boolean) => {
+    setIsNjuStudent(checked);
+    if (checked && !user.njuEmailVerified) {
+      // 勾选但未验证 → 弹出验证界面
+      setShowVerification(true);
+    } else if (checked) {
+      // 已验证过，直接保存
+      setMsg('');
+    } else {
+      // 取消勾选
+      setShowVerification(false);
+      setEmailAccount('');
+      setVerificationCode('');
+      setCodeSent(false);
+    }
   };
 
   /** 客户端压缩图片至最大 800px 边长、500KB 以下，避免 413 错误 */
@@ -143,11 +229,83 @@ export default function ProfilePage() {
             <input
               type="checkbox"
               checked={isNjuStudent}
-              onChange={e => setIsNjuStudent(e.target.checked)}
+              onChange={e => handleNjuCheckbox(e.target.checked)}
             />
             我是（或曾为）南京大学学生
           </label>
         </div>
+
+        {/* 南大邮箱验证弹窗 */}
+        {showVerification && (
+          <div className="verification-overlay" onClick={() => { setShowVerification(false); setIsNjuStudent(false); }}>
+            <div className="verification-modal" onClick={e => e.stopPropagation()}>
+              <h3>🎓 南大学生身份验证</h3>
+              <p className="verification-desc">
+                请填写你的南大邮箱，我们将发送验证码以完成验证。
+              </p>
+
+              <div className="verification-email-row">
+                <input
+                  className="verification-input"
+                  placeholder="邮箱账号名"
+                  value={emailAccount}
+                  onChange={e => setEmailAccount(e.target.value)}
+                  maxLength={50}
+                />
+                <select
+                  className="verification-select"
+                  value={emailDomain}
+                  onChange={e => setEmailDomain(e.target.value)}
+                >
+                  {EMAIL_DOMAINS.map(d => (
+                    <option key={d} value={d}>{d}</option>
+                  ))}
+                </select>
+              </div>
+
+              <button
+                className="btn-sm"
+                onClick={handleSendCode}
+                disabled={sendingCode || countdown > 0}
+                style={{ width: '100%', marginBottom: 12 }}
+              >
+                {sendingCode ? '发送中...' : countdown > 0 ? `${countdown}s 后重新发送` : '发送验证码'}
+              </button>
+
+              {codeSent && (
+                <>
+                  <input
+                    className="verification-input"
+                    placeholder="请输入 6 位验证码"
+                    value={verificationCode}
+                    onChange={e => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                    maxLength={6}
+                    style={{ textAlign: 'center', letterSpacing: 8, fontSize: 20, marginBottom: 12 }}
+                  />
+                  <button
+                    className="btn-primary"
+                    onClick={handleVerify}
+                    disabled={verifying || verificationCode.length !== 6}
+                    style={{ width: '100%' }}
+                  >
+                    {verifying ? '验证中...' : '提交验证'}
+                  </button>
+                </>
+              )}
+
+              <button
+                className="btn-ghost"
+                onClick={() => {
+                  setShowVerification(false);
+                  setIsNjuStudent(false);
+                }}
+                style={{ width: '100%', marginTop: 8 }}
+              >
+                取消
+              </button>
+            </div>
+          </div>
+        )}
 
         <button className="btn-primary" onClick={handleSave} disabled={saving}>
           {saving ? '保存中...' : '保存修改'}

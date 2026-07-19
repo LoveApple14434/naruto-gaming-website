@@ -217,6 +217,18 @@ export const profileApi = {
     }
     return res.json();
   },
+  // 发送南大邮箱验证码
+  sendVerificationCode: (data: { emailAccount: string; emailDomain: string }) =>
+    request<{ success: boolean; message: string }>('/auth/send-verification-code', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  // 校验验证码
+  verifyEmail: (code: string) =>
+    request<import('../types').User>('/auth/verify-email', {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+    }),
 };
 
 // Upload

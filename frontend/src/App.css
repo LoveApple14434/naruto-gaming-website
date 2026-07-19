@@ -2313,6 +2313,93 @@
   width: 100%;
 }
 
+/* ─── 南大邮箱验证弹窗 ─── */
+.verification-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.verification-modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.verification-modal h3 {
+  margin: 0 0 8px;
+  font-size: 1.2rem;
+  color: #1a1a2e;
+}
+
+.verification-desc {
+  margin: 0 0 24px;
+  font-size: 0.85rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.verification-email-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.verification-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.verification-input:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.verification-select {
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  outline: none;
+  background: #fff;
+  cursor: pointer;
+  min-width: 160px;
+}
+
+.verification-select:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.btn-ghost {
+  padding: 10px 20px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  color: #64748b;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-ghost:hover {
+  background: #f1f5f9;
+  color: #475569;
+}
+
 @media (max-width: 768px) {
   .features-section {
     grid-template-columns: 1fr;

@@ -6,6 +6,7 @@ export interface User {
   nickname?: string | null;
   avatar?: string | null;
   isNjuStudent?: boolean;
+  njuEmailVerified?: boolean;
   createdAt?: string;
   _count?: { userBets: number; redemptions: number };
 }
