@@ -2384,6 +2384,39 @@
   box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
 }
 
+.verification-code-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font-size: 1.25rem;
+  letter-spacing: 0.6em;
+  text-align: center;
+  outline: none;
+  transition: border-color 0.2s;
+  margin-bottom: 12px;
+}
+
+.verification-code-input:focus {
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+}
+
+.verification-msg {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+  line-height: 1.5;
+  word-break: break-all;
+}
+
+.verification-msg:empty {
+  display: none;
+}
+
 .btn-ghost {
   padding: 10px 20px;
   border: 1px solid #cbd5e1;

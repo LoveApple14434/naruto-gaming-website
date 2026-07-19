@@ -244,6 +244,8 @@ export default function ProfilePage() {
                 请填写你的南大邮箱，我们将发送验证码以完成验证。
               </p>
 
+              {msg && <div className="verification-msg">{msg}</div>}
+
               <div className="verification-email-row">
                 <input
                   className="verification-input"
@@ -275,12 +277,11 @@ export default function ProfilePage() {
               {codeSent && (
                 <>
                   <input
-                    className="verification-input"
+                    className="verification-code-input"
                     placeholder="请输入 6 位验证码"
                     value={verificationCode}
                     onChange={e => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                     maxLength={6}
-                    style={{ textAlign: 'center', letterSpacing: 8, fontSize: 20, marginBottom: 12 }}
                   />
                   <button
                     className="btn-primary"
@@ -298,6 +299,7 @@ export default function ProfilePage() {
                 onClick={() => {
                   setShowVerification(false);
                   setIsNjuStudent(false);
+                  setMsg('');
                 }}
                 style={{ width: '100%', marginTop: 8 }}
               >
