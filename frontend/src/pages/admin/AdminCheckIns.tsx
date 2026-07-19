@@ -3,7 +3,6 @@ import { checkinApi } from '../../api/client';
 import type { CheckInEvent } from '../../types';
 
 export default function AdminCheckIns() {
-  const { user } = useAuth();
   const [events, setEvents] = useState<CheckInEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
