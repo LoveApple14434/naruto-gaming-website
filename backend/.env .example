@@ -1,6 +1,7 @@
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/naruto_gaming?schema=public"
-JWT_SECRET="naruto-gaming-jwt-secret-change-in-production"
+DATABASE_URL="postgresql://用户名:密码@localhost:5432/naruto_gaming?schema=public"
+JWT_SECRET="请替换为随机字符串"
 PORT=3001
 FRONTEND_URL="http://localhost:5173"
-MAIL_ADDRESS="no-reply@example.com"
-MAIL_AUTH_CODE="YourAuthCode"
+# 以下为可选配置（南大邮箱验证功能）
+MAIL_ADDRESS="your-email@example.com"
+MAIL_AUTH_CODE="your-auth-code"
