@@ -83,7 +83,7 @@ export default function ProfilePage() {
     setVerifying(true);
     setMsg('');
     try {
-      const updatedUser = await profileApi.verifyEmail(verificationCode.trim());
+      await profileApi.verifyEmail(verificationCode.trim());
       setIsNjuStudent(true);
       setShowVerification(false);
       setEmailAccount('');
