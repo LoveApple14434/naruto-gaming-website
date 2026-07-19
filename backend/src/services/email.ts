@@ -1,14 +1,26 @@
 import nodemailer from 'nodemailer';
 
-const transporter = nodemailer.createTransport({
-  host: 'smtp.qq.com',
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.MAIL_ADDRESS,
-    pass: process.env.MAIL_AUTH_CODE,
-  },
-});
+const mailAddress = process.env.MAIL_ADDRESS;
+const mailAuthCode = process.env.MAIL_AUTH_CODE;
+
+if (!mailAddress || !mailAuthCode) {
+  console.error(
+    '[email] 缺少环境变量 MAIL_ADDRESS 或 MAIL_AUTH_CODE，邮件功能不可用',
+  );
+}
+
+/** 延迟创建的 transporter（确保 .env 已加载） */
+function getTransporter() {
+  return nodemailer.createTransport({
+    host: 'smtp.qq.com',
+    port: 465,
+    secure: true,
+    auth: {
+      user: mailAddress,
+      pass: mailAuthCode,
+    },
+  });
+}
 
 /**
  * 发送验证码到指定邮箱
@@ -16,9 +28,13 @@ const transporter = nodemailer.createTransport({
  * @param code 验证码
  */
 export async function sendVerificationCode(to: string, code: string): Promise<void> {
-  const mailFrom = process.env.MAIL_ADDRESS ?? 'no-reply@example.com';
+  if (!mailAddress || !mailAuthCode) {
+    throw new Error('邮件服务未配置：缺少 MAIL_ADDRESS 或 MAIL_AUTH_CODE');
+  }
+
+  const transporter = getTransporter();
   await transporter.sendMail({
-    from: `"火影竞猜" <${mailFrom}>`,
+    from: `"火影竞猜" <${mailAddress}>`,
     to,
     subject: '【火影竞猜】南京大学学生身份验证',
     html: `

@@ -120,8 +120,20 @@ router.post('/send-verification-code', authenticate, validate(sendCodeSchema), a
       },
     });
 
-    // 发送邮件
-    await sendVerificationCode(fullEmail, code);
+    try {
+      // 发送邮件
+      await sendVerificationCode(fullEmail, code);
+    } catch (mailError: any) {
+      // 邮件发送失败时仍需清理验证码
+      await prisma.user.update({
+        where: { id: req.user!.userId },
+        data: {
+          njuVerificationCode: null,
+          njuVerificationCodeExpires: null,
+        },
+      });
+      throw new AppError(`邮件发送失败: ${mailError.message}`);
+    }
 
     res.json({ success: true, message: '验证码已发送到你的南大邮箱' });
   } catch (error) {
