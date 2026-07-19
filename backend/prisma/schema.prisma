@@ -56,8 +56,9 @@ model User {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  userBets      UserBet[]
-  redemptions   Redemption[]
+  userBets        UserBet[]
+  redemptions     Redemption[]
+  checkInRecords  CheckInRecord[]
 
   @@map("users")
 }
@@ -278,4 +279,50 @@ model HallOfFame {
   player      Player   @relation(fields: [playerId], references: [id], onDelete: Cascade)
 
   @@map("hall_of_fame")
+}
+
+// ─── 签到活动 ───
+model CheckInEvent {
+  id        String   @id @default(uuid())
+  title     String
+  startDate DateTime
+  endDate   DateTime
+  active    Boolean  @default(true)
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  days    CheckInDay[]
+  records CheckInRecord[]
+
+  @@map("check_in_events")
+}
+
+// ─── 签到每日奖励配置 ───
+model CheckInDay {
+  id        String @id @default(uuid())
+  eventId   String
+  dayNumber Int    // 第几天（1-based）
+  coins     Int    // 当天发放的竞猜币数
+
+  event CheckInEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, dayNumber])
+  @@map("check_in_days")
+}
+
+// ─── 用户签到记录 ───
+model CheckInRecord {
+  id           String   @id @default(uuid())
+  userId       String
+  eventId      String
+  dayNumber    Int      // 第几天
+  coinsAwarded Int      // 实际获得的竞猜币（已考虑南大加成）
+  createdAt    DateTime @default(now())
+
+  user  User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event CheckInEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId, dayNumber])
+  @@map("check_in_records")
 }

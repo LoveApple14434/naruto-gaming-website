@@ -177,6 +177,27 @@ export const userApi = {
     }),
 };
 
+// Check-ins
+export const checkinApi = {
+  getActive: () => request<import('../types').CheckInEvent | null>('/checkins/active'),
+  getTodayStatus: () => request<import('../types').TodayCheckInStatus>('/checkins/today-status'),
+  myRecords: () => request<import('../types').CheckInRecord[]>('/checkins/my-records'),
+  checkin: (eventId: string, dayNumber: number) =>
+    request<{ record: import('../types').CheckInRecord; coinsAwarded: number }>('/checkins/checkin', {
+      method: 'POST',
+      body: JSON.stringify({ eventId, dayNumber }),
+    }),
+  // Admin
+  listAll: () => request<import('../types').CheckInEvent[]>('/checkins/all'),
+  getStats: (id: string) => request<import('../types').CheckInEvent>(`/checkins/${id}/stats`),
+  create: (data: { title: string; startDate: string; endDate: string; days: { dayNumber: number; coins: number }[] }) =>
+    request<import('../types').CheckInEvent>('/checkins', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: string, data: Partial<{ title: string; startDate: string; endDate: string; active: boolean; days: { dayNumber: number; coins: number }[] }>) =>
+    request<import('../types').CheckInEvent>(`/checkins/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (id: string) =>
+    request<{ success: boolean }>(`/checkins/${id}`, { method: 'DELETE' }),
+};
+
 // Profile
 export const profileApi = {
   update: (data: { nickname?: string | null; avatar?: string | null; isNjuStudent?: boolean }) =>

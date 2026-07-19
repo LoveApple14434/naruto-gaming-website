@@ -7,6 +7,7 @@ export default function AdminDashboard() {
 
   const allLinks = [
     { to: '/admin/announcements', label: '公告管理', icon: '📢' },
+    { to: '/admin/checkins', label: '签到管理', icon: '✅' },
     { to: '/admin/users', label: '用户管理', icon: '👥' },
     { to: '/admin/players', label: '选手管理', icon: '👤' },
     { to: '/admin/brackets', label: '赛程管理', icon: '🏆' },
@@ -16,9 +17,10 @@ export default function AdminDashboard() {
     { to: '/admin/hall-of-fame', label: '名人堂管理', icon: '⭐' },
   ];
 
-  // 协助管理员只能看到用户管理
+  // 协助管理员能看到用户管理和签到管理
+  const allowedForModerator = ['/admin/users', '/admin/checkins'];
   const links = isModerator
-    ? allLinks.filter(l => l.to === '/admin/users')
+    ? allLinks.filter(l => allowedForModerator.includes(l.to))
     : allLinks;
 
   return (

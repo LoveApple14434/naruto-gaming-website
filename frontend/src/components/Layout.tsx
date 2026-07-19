@@ -1,10 +1,33 @@
+import { useState, useEffect } from 'react';
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../store/AuthContext';
+import { checkinApi } from '../api/client';
+import CheckInModal from './CheckInModal';
 import logoIcon from '../assets/naruto-icon.jpeg';
 
 export default function Layout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [showCheckin, setShowCheckin] = useState(false);
+
+  // 用户登录后检查是否需要签到
+  useEffect(() => {
+    if (!user) {
+      setShowCheckin(false);
+      return;
+    }
+    // 延迟一点检查，避免页面闪烁
+    const timer = setTimeout(() => {
+      checkinApi.getTodayStatus()
+        .then(data => {
+          if (data.event && !data.checkedInToday) {
+            setShowCheckin(true);
+          }
+        })
+        .catch(() => { /* ignore */ });
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [user]);
 
   const handleLogout = () => {
     logout();
@@ -52,6 +75,8 @@ export default function Layout() {
       <footer className="app-footer">
         <p>&copy; 2026 火影忍者手游比赛平台</p>
       </footer>
+
+      {showCheckin && <CheckInModal onClose={() => setShowCheckin(false)} />}
     </div>
   );
 }

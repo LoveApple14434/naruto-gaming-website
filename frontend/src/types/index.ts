@@ -155,3 +155,43 @@ export interface HallOfFameEntry {
   active: boolean;
   player?: Player;
 }
+
+// ─── 签到 ───
+export interface CheckInDay {
+  id: string;
+  eventId: string;
+  dayNumber: number;
+  coins: number;
+}
+
+export interface CheckInEvent {
+  id: string;
+  title: string;
+  startDate: string;
+  endDate: string;
+  active: boolean;
+  createdBy: string;
+  createdAt: string;
+  updatedAt: string;
+  days: CheckInDay[];
+  _count?: { records: number };
+  records?: CheckInRecord[];
+  dayStats?: { dayNumber: number; coins: number; count: number }[];
+  totalParticipants?: number;
+}
+
+export interface CheckInRecord {
+  id: string;
+  userId: string;
+  eventId: string;
+  dayNumber: number;
+  coinsAwarded: number;
+  createdAt: string;
+  event?: { id: string; title: string };
+}
+
+export interface TodayCheckInStatus {
+  event: CheckInEvent | null;
+  checkedInToday: boolean;
+  todayDayNumber: number | null;
+}

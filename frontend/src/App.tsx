@@ -19,6 +19,7 @@ import AdminRedemptions from './pages/admin/AdminRedemptions'
 import AdminPlayers from './pages/admin/AdminPlayers'
 import AdminBets from './pages/admin/AdminBets'
 import AdminAnnouncements from './pages/admin/AdminAnnouncements'
+import AdminCheckIns from './pages/admin/AdminCheckIns'
 import AdminUsers from './pages/admin/AdminUsers'
 import './App.css'
 
@@ -52,6 +53,7 @@ function App() {
         <Route path="/admin/hall-of-fame" element={<ProtectedRoute adminOnly><AdminHallOfFame /></ProtectedRoute>} />
         <Route path="/admin/redemptions" element={<ProtectedRoute adminOnly><AdminRedemptions /></ProtectedRoute>} />
         <Route path="/admin/announcements" element={<ProtectedRoute adminOnly><AdminAnnouncements /></ProtectedRoute>} />
+        <Route path="/admin/checkins" element={<ProtectedRoute moderatorAccess><AdminCheckIns /></ProtectedRoute>} />
         <Route path="/admin/players" element={<ProtectedRoute adminOnly><AdminPlayers /></ProtectedRoute>} />
         <Route path="/admin/bets" element={<ProtectedRoute adminOnly><AdminBets /></ProtectedRoute>} />
       </Route>
