@@ -29,6 +29,7 @@ enum BetStatus {
   OPEN
   CLOSED
   SETTLED
+  CANCELLED
 }
 
 // ─── 公告 ───

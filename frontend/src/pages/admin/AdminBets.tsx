@@ -57,6 +57,14 @@ export default function AdminBets() {
     } catch (e: any) { alert(e.message); }
   };
 
+  const handleDelete = async (id: string) => {
+    if (!confirm('确定要取消此竞猜吗？将退还所有用户已投注的竞猜币。')) return;
+    try {
+      await betApi.delete(id);
+      loadBracketData(selectedBracket);
+    } catch (e: any) { alert(e.message); }
+  };
+
   if (loading) return <div className="loading">加载中...</div>;
 
   return (
@@ -106,6 +114,10 @@ export default function AdminBets() {
                       <button onClick={() => handleSettle(b.id)} className="btn-sm">结算</button>
                     )}
                     {b.status === 'SETTLED' && <span>已结算</span>}
+                    {b.status === 'CANCELLED' && <span>已取消</span>}
+                    {b.status !== 'SETTLED' && b.status !== 'CANCELLED' && (
+                      <button onClick={() => handleDelete(b.id)} className="btn-sm btn-danger" style={{ marginLeft: 4 }}>删除</button>
+                    )}
                   </td>
                 </tr>
               ))}

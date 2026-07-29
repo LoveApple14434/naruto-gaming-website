@@ -117,6 +117,8 @@ export const betApi = {
     request<{ success: boolean }>(`/bets/${id}/settle`, { method: 'PUT', body: JSON.stringify(data) }),
   place: (id: string, data: { pick: string; amount: number }) =>
     request<{ success: boolean }>(`/bets/${id}/place`, { method: 'POST', body: JSON.stringify(data) }),
+  delete: (id: string) =>
+    request<{ success: boolean }>(`/bets/${id}`, { method: 'DELETE' }),
   myBets: () => request<import('../types').UserBet[]>('/bets/user/my'),
 };
 

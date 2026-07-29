@@ -134,6 +134,45 @@ router.put('/:id/settle', authenticate, requireAdmin, validate(settleSchema), as
   }
 });
 
+// 管理员删除/取消竞猜（软删除），退还所有未结算的投注
+router.delete('/:id', authenticate, requireAdmin, async (req, res, next) => {
+  try {
+    const bet = await prisma.bet.findUnique({
+      where: { id: req.params.id },
+      include: {
+        userBets: { where: { settled: false } },
+      },
+    });
+    if (!bet) throw new AppError('竞猜不存在', 404);
+    if (bet.status === 'SETTLED') throw new AppError('已结算的竞猜不能取消');
+    if (bet.status === 'CANCELLED') throw new AppError('竞猜已取消');
+
+    // 退还所有未结算用户的本金
+    for (const userBet of bet.userBets) {
+      await prisma.$transaction([
+        prisma.user.update({
+          where: { id: userBet.userId },
+          data: { coins: { increment: userBet.amount } },
+        }),
+        prisma.userBet.update({
+          where: { id: userBet.id },
+          data: { settled: true, payout: userBet.amount },
+        }),
+      ]);
+    }
+
+    // 更新竞猜状态为已取消
+    await prisma.bet.update({
+      where: { id: req.params.id },
+      data: { status: 'CANCELLED' },
+    });
+
+    res.json({ success: true, message: '竞猜已取消，已退还所有投注' });
+  } catch (error) {
+    next(error);
+  }
+});
+
 // ─── 用户参与竞猜 ───
 
 const placeBetSchema = z.object({

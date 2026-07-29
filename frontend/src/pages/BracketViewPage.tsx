@@ -68,7 +68,7 @@ export default function BracketViewPage() {
           <h2>竞猜</h2>
           {betMsg && <div className="toast">{betMsg}</div>}
           <div className="bets-view">
-            {bets.map(bet => (
+            {bets.filter(b => b.status !== 'CANCELLED').map(bet => (
               <div key={bet.id} className="bet-card">
                 <h4>{bet.title}</h4>
                 <div className="bet-odds">
