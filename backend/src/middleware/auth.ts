@@ -8,6 +8,7 @@ const JWT_SECRET = process.env.JWT_SECRET ?? 'default-secret';
 export interface AuthPayload {
   userId: string;
   role: string;
+  tokenVersion?: number;
 }
 
 declare global {
@@ -39,6 +40,10 @@ export async function authenticate(
     const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
     if (!user) {
       throw new AppError('用户不存在', 401);
+    }
+
+    if (decoded.tokenVersion !== undefined && decoded.tokenVersion !== user.tokenVersion) {
+      throw new AppError('令牌已过期，请重新登录', 401);
     }
 
     req.user = { userId: user.id, role: user.role };

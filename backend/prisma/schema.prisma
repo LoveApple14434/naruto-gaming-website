@@ -57,6 +57,7 @@ model User {
   njuEmailVerified    Boolean   @default(false) // 邮箱是否已验证
   njuVerificationCode       String?   // 验证码
   njuVerificationCodeExpires DateTime? // 验证码过期时间
+  tokenVersion Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

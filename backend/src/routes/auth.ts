@@ -34,7 +34,7 @@ router.post('/register', validate(registerSchema), async (req, res, next) => {
       data: { username, password: hashed },
     });
 
-    const token = generateToken({ userId: user.id, role: user.role });
+    const token = generateToken({ userId: user.id, role: user.role, tokenVersion: user.tokenVersion });
 
     res.status(201).json({
       token,
@@ -224,6 +224,46 @@ router.put('/profile', authenticate, validate(updateProfileSchema), async (req, 
       select: { id: true, username: true, role: true, coins: true, nickname: true, avatar: true, isNjuStudent: true, njuEmailVerified: true, createdAt: true },
     });
     res.json(user);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// ─── 修改密码 ───
+
+const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1),
+  newPassword: z.string().min(6).max(100),
+});
+
+router.put('/change-password', authenticate, validate(changePasswordSchema), async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    const user = await prisma.user.findUnique({ where: { id: req.user!.userId } });
+    if (!user) {
+      throw new AppError('用户不存在', 404);
+    }
+
+    const valid = await bcrypt.compare(currentPassword, user.password);
+    if (!valid) {
+      throw new AppError('当前密码错误', 401);
+    }
+
+    if (currentPassword === newPassword) {
+      throw new AppError('新密码不能与当前密码相同');
+    }
+
+    const hashed = await bcrypt.hash(newPassword, 10);
+    await prisma.user.update({
+      where: { id: req.user!.userId },
+      data: {
+        password: hashed,
+        tokenVersion: { increment: 1 },
+      },
+    });
+
+    res.json({ success: true, message: '密码修改成功，请重新登录' });
   } catch (error) {
     next(error);
   }

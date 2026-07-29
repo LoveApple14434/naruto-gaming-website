@@ -44,6 +44,11 @@ export const authApi = {
       body: JSON.stringify(data),
     }),
   me: () => request<import('../types').User>('/auth/me'),
+  changePassword: (data: { currentPassword: string; newPassword: string }) =>
+    request<{ success: boolean; message: string }>('/auth/change-password', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
 };
 
 // Players

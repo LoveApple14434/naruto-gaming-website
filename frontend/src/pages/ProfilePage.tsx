@@ -1,11 +1,11 @@
 import { useState, useRef } from 'react';
 import { useAuth } from '../store/AuthContext';
-import { profileApi } from '../api/client';
+import { authApi, profileApi } from '../api/client';
 
 const EMAIL_DOMAINS = ['@smail.nju.edu.cn', '@nju.edu.cn'] as const;
 
 export default function ProfilePage() {
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUser, logout } = useAuth();
   const fileRef = useRef<HTMLInputElement>(null);
 
   const [nickname, setNickname] = useState(user?.nickname || '');
@@ -25,6 +25,13 @@ export default function ProfilePage() {
   const [codeSent, setCodeSent] = useState(false);
   const [countdown, setCountdown] = useState(0);
 
+  // 修改密码状态
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
+
   if (!user) return null;
 
   const avatarSrc = preview || user.avatar || undefined;
@@ -39,6 +46,41 @@ export default function ProfilePage() {
       setMsg(`❌ ${e.message}`);
     }
     setSaving(false);
+  };
+
+  // 修改密码
+  const handleChangePassword = async () => {
+    if (!currentPassword) {
+      setMsg('❌ 请输入当前密码');
+      return;
+    }
+    if (newPassword.length < 6) {
+      setMsg('❌ 新密码至少 6 位');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setMsg('❌ 两次输入的新密码不一致');
+      return;
+    }
+    if (currentPassword === newPassword) {
+      setMsg('❌ 新密码不能与当前密码相同');
+      return;
+    }
+    setChangingPassword(true);
+    setMsg('');
+    try {
+      const res = await authApi.changePassword({ currentPassword, newPassword });
+      setMsg(`✅ ${res.message}`);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setShowPasswordForm(false);
+      // 强制退出登录，让用户用新密码重新登录
+      setTimeout(() => logout(), 2000);
+    } catch (e: any) {
+      setMsg(`❌ ${e.message}`);
+    }
+    setChangingPassword(false);
   };
 
   // 发送验证码
@@ -308,6 +350,68 @@ export default function ProfilePage() {
             </div>
           </div>
         )}
+
+        <hr className="profile-divider" />
+
+        {/* 修改密码 */}
+        <div className="profile-password-section">
+          {!showPasswordForm ? (
+            <button className="btn-sm" onClick={() => setShowPasswordForm(true)}>
+              修改密码
+            </button>
+          ) : (
+            <div className="password-form">
+              <h3>修改密码</h3>
+              <div className="profile-field">
+                <label>当前密码</label>
+                <input
+                  type="password"
+                  value={currentPassword}
+                  onChange={e => setCurrentPassword(e.target.value)}
+                  placeholder="输入当前密码"
+                />
+              </div>
+              <div className="profile-field">
+                <label>新密码</label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={e => setNewPassword(e.target.value)}
+                  placeholder="至少 6 位"
+                />
+              </div>
+              <div className="profile-field">
+                <label>确认新密码</label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={e => setConfirmPassword(e.target.value)}
+                  placeholder="再次输入新密码"
+                />
+              </div>
+              <div className="password-actions">
+                <button
+                  className="btn-primary"
+                  onClick={handleChangePassword}
+                  disabled={changingPassword}
+                >
+                  {changingPassword ? '修改中...' : '确认修改'}
+                </button>
+                <button
+                  className="btn-ghost"
+                  onClick={() => {
+                    setShowPasswordForm(false);
+                    setCurrentPassword('');
+                    setNewPassword('');
+                    setConfirmPassword('');
+                  }}
+                >
+                  取消
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
 
         <button className="btn-primary" onClick={handleSave} disabled={saving}>
           {saving ? '保存中...' : '保存修改'}
