@@ -57,7 +57,7 @@ router.put('/:id/coins', authenticate, requireAdminOrModerator, validate(updateC
 });
 
 const updateRoleSchema = z.object({
-  role: z.enum(['USER', 'MODERATOR']),
+  role: z.enum(['USER', 'MODERATOR', 'ADMIN']),
 });
 
 // 仅管理员：修改用户角色
