@@ -28,8 +28,9 @@ export default function HomePage() {
           </div>
           <div className="announcement-list">
             {announcements.map(a => (
-              <details key={a.id} className="announcement-item">
+              <details key={a.id} className={`announcement-item${a.isPinned ? ' pinned' : ''}`}>
                 <summary className="announcement-title">
+                  {a.isPinned && <span className="announcement-pin-badge">📌 置顶</span>}
                   {a.title}
                   <span className="announcement-date">
                     {new Date(a.createdAt).toLocaleDateString('zh-CN')}

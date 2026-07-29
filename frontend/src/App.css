@@ -2967,3 +2967,42 @@
 .modal-wide {
   max-width: 640px;
 }
+
+/* ─── Pinned Announcement ─── */
+.announcement-item.pinned {
+  background: #fffbeb;
+  border-left: 3px solid #f59e0b;
+}
+
+.announcement-pin-badge {
+  font-size: 0.7rem;
+  background: #f59e0b;
+  color: #fff;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+/* ─── Admin Pinned ─── */
+.pin-indicator {
+  margin-right: 4px;
+}
+
+.pin-badge {
+  font-size: 0.75rem;
+  background: #f59e0b;
+  color: #fff;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.admin-table tr.pinned-row {
+  background: #fffbeb;
+}
+
+.admin-table tr.pinned-row td:first-child {
+  font-weight: 700;
+}
+}

@@ -7,7 +7,7 @@ export default function AdminAnnouncements() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editId, setEditId] = useState<string | null>(null);
-  const [form, setForm] = useState({ title: '', content: '', published: false });
+  const [form, setForm] = useState({ title: '', content: '', published: false, isPinned: false });
   const [saving, setSaving] = useState(false);
 
   const load = () => {
@@ -22,13 +22,13 @@ export default function AdminAnnouncements() {
 
   const openCreate = () => {
     setEditId(null);
-    setForm({ title: '', content: '', published: false });
+    setForm({ title: '', content: '', published: false, isPinned: false });
     setShowForm(true);
   };
 
   const openEdit = (a: Announcement) => {
     setEditId(a.id);
-    setForm({ title: a.title, content: a.content, published: a.published });
+    setForm({ title: a.title, content: a.content, published: a.published, isPinned: a.isPinned });
     setShowForm(true);
   };
 
@@ -63,6 +63,15 @@ export default function AdminAnnouncements() {
   const togglePublish = async (a: Announcement) => {
     try {
       await announcementApi.update(a.id, { published: !a.published });
+      load();
+    } catch {
+      alert('操作失败');
+    }
+  };
+
+  const handleTogglePin = async (a: Announcement) => {
+    try {
+      await announcementApi.update(a.id, { isPinned: !a.isPinned });
       load();
     } catch {
       alert('操作失败');
@@ -111,6 +120,16 @@ export default function AdminAnnouncements() {
                 立即发布
               </label>
             </div>
+            <div className="form-group checkbox-group">
+              <label>
+                <input
+                  type="checkbox"
+                  checked={form.isPinned}
+                  onChange={e => setForm(f => ({ ...f, isPinned: e.target.checked }))}
+                />
+                📌 置顶公告
+              </label>
+            </div>
             <div className="form-actions">
               <button className="btn-secondary" onClick={() => setShowForm(false)}>取消</button>
               <button
@@ -133,24 +152,29 @@ export default function AdminAnnouncements() {
             <tr>
               <th>标题</th>
               <th>状态</th>
+              <th>置顶</th>
               <th>创建时间</th>
               <th>操作</th>
             </tr>
           </thead>
           <tbody>
             {announcements.map(a => (
-              <tr key={a.id}>
-                <td>{a.title}</td>
+              <tr key={a.id} className={a.isPinned ? 'pinned-row' : ''}>
+                <td>{a.isPinned && <span className="pin-indicator">📌</span>} {a.title}</td>
                 <td>
                   <span className={`status-badge ${a.published ? 'status-published' : 'status-draft'}`}>
                     {a.published ? '已发布' : '草稿'}
                   </span>
+                </td>
+                <td>
+                  {a.isPinned ? <span className="pin-badge">置顶</span> : '—'}
                 </td>
                 <td>{new Date(a.createdAt).toLocaleString('zh-CN')}</td>
                 <td className="action-cell">
                   <button className="btn-sm" onClick={() => togglePublish(a)}>
                     {a.published ? '下架' : '发布'}
                   </button>
+                  <button className="btn-sm" onClick={() => handleTogglePin(a)}>📌 {a.isPinned ? '取消置顶' : '置顶'}</button>
                   <button className="btn-sm" onClick={() => openEdit(a)}>编辑</button>
                   <button className="btn-sm btn-danger" onClick={() => handleDelete(a.id)}>删除</button>
                 </td>

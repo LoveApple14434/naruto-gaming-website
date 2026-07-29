@@ -6,12 +6,12 @@ import { validate } from '../middleware/validate';
 
 const router = Router();
 
-// 公开：获取所有已发布的公告
+// 公开：获取所有已发布的公告（置顶优先）
 router.get('/', async (_req, res, next) => {
   try {
     const announcements = await prisma.announcement.findMany({
       where: { published: true },
-      orderBy: { createdAt: 'desc' },
+      orderBy: [{ isPinned: 'desc' }, { createdAt: 'desc' }],
     });
     res.json(announcements);
   } catch (error) {
@@ -19,11 +19,11 @@ router.get('/', async (_req, res, next) => {
   }
 });
 
-// 管理员：获取所有公告（含未发布）
+// 管理员：获取所有公告（含未发布，置顶优先）
 router.get('/all', authenticate, requireAdmin, async (_req, res, next) => {
   try {
     const announcements = await prisma.announcement.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: [{ isPinned: 'desc' }, { createdAt: 'desc' }],
     });
     res.json(announcements);
   } catch (error) {
@@ -35,6 +35,7 @@ const createSchema = z.object({
   title: z.string().min(1).max(200),
   content: z.string().min(1),
   published: z.boolean().optional().default(false),
+  isPinned: z.boolean().optional().default(false),
 });
 
 // 创建公告（管理员）
@@ -51,6 +52,7 @@ const updateSchema = z.object({
   title: z.string().min(1).max(200).optional(),
   content: z.string().min(1).optional(),
   published: z.boolean().optional(),
+  isPinned: z.boolean().optional(),
 });
 
 // 更新公告（管理员）

@@ -142,6 +142,7 @@ export interface Announcement {
   title: string;
   content: string;
   published: boolean;
+  isPinned: boolean;
   createdAt: string;
   updatedAt: string;
 }
