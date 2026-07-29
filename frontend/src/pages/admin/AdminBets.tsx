@@ -114,8 +114,8 @@ export default function AdminBets() {
                       <button onClick={() => handleSettle(b.id)} className="btn-sm">结算</button>
                     )}
                     {b.status === 'SETTLED' && <span>已结算</span>}
-                    {b.cancelled && <span>已取消</span>}
-                    {b.status !== 'SETTLED' && !b.cancelled && (
+                    {Boolean(b.cancelled) && <span>已取消</span>}
+                    {b.status !== 'SETTLED' && !Boolean(b.cancelled) && (
                       <button onClick={() => handleDelete(b.id)} className="btn-sm btn-danger" style={{ marginLeft: 4 }}>删除</button>
                     )}
                   </td>

@@ -14,34 +14,36 @@ echo "🚀 开始部署: $(date)"
 
 # ── 1. 拉取最新代码 ──
 echo ""
-echo "⟦1/6⟧ 拉取最新代码..."
+echo "⟦1/7⟧ 拉取最新代码..."
 git pull
 
 # ── 2. 安装后端依赖 ──
 echo ""
-echo "⟦2/6⟧ 安装后端依赖..."
+echo "⟦2/7⟧ 安装后端依赖..."
 cd "$PROJECT_ROOT/backend"
 npm install
 
-# ── 3. 生成 Prisma 客户端 + 数据库迁移 ──
+# ── 3. 同步数据库 + 生成 Prisma 客户端 ──
 echo ""
-echo "⟦3/6⟧ 同步数据库..."
+echo "⟦3/7⟧ 同步数据库..."
+npx prisma db push --accept-data-loss
+echo ""
+echo "⟦3b/7⟧ 生成 Prisma 客户端..."
 npx prisma generate
-npx prisma migrate deploy 2>/dev/null || npx prisma db push --accept-data-loss
 
 # ── 4. 安装前端依赖并构建 ──
 echo ""
-echo "⟦4/6⟧ 安装前端依赖..."
+echo "⟦4/7⟧ 安装前端依赖..."
 cd "$PROJECT_ROOT/frontend"
 npm install
 
 echo ""
-echo "⟦5/6⟧ 构建前端..."
+echo "⟦5/7⟧ 构建前端..."
 npm run build
 
 # ── 5. 构建后端 ──
 echo ""
-echo "⟦6/6⟧ 构建后端..."
+echo "⟦6/7⟧ 构建后端..."
 cd "$PROJECT_ROOT/backend"
 npm run build
 

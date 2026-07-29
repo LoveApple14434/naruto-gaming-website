@@ -71,7 +71,7 @@ export default function BetsPage() {
             <div className="empty-state">该赛事暂无竞猜</div>
           ) : (
             <div className="bets-grid">
-              {bets.filter(b => b.status !== 'SETTLED' && !b.cancelled).map(bet => (
+              {bets.filter(b => b.status !== 'SETTLED' && !Boolean(b.cancelled)).map(bet => (
                 <div key={bet.id} className="bet-card">
                   <div className="bet-card-header">
                     <h4>{bet.title}</h4>
