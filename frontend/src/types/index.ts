@@ -90,7 +90,8 @@ export interface Bet {
   bracketId: string;
   nodeId: string;
   title: string;
-  status: 'OPEN' | 'CLOSED' | 'SETTLED' | 'CANCELLED';
+  status: 'OPEN' | 'CLOSED' | 'SETTLED';
+  cancelled?: boolean;
   oddsPlayer1: number | null;
   oddsPlayer2: number | null;
   totalBetsP1: number;

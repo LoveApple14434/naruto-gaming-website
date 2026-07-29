@@ -145,7 +145,7 @@ router.delete('/:id', authenticate, requireAdmin, async (req, res, next) => {
     });
     if (!bet) throw new AppError('竞猜不存在', 404);
     if (bet.status === 'SETTLED') throw new AppError('已结算的竞猜不能取消');
-    if (bet.status === 'CANCELLED') throw new AppError('竞猜已取消');
+    if (bet.cancelled) throw new AppError('竞猜已取消');
 
     // 退还所有未结算用户的本金
     for (const userBet of bet.userBets) {
@@ -161,10 +161,10 @@ router.delete('/:id', authenticate, requireAdmin, async (req, res, next) => {
       ]);
     }
 
-    // 更新竞猜状态为已取消
+    // 标记竞猜为已取消
     await prisma.bet.update({
       where: { id: req.params.id },
-      data: { status: 'CANCELLED' },
+      data: { cancelled: true },
     });
 
     res.json({ success: true, message: '竞猜已取消，已退还所有投注' });
