@@ -89,21 +89,21 @@ export default function HomePage() {
       </section>
 
       <section className="features-section">
-        <div className="feature-card">
+        <Link to="/brackets" className="feature-card">
           <div className="feature-icon">🏆</div>
           <h3>赛事竞猜</h3>
           <p>参与比赛竞猜，赢取竞猜币</p>
-        </div>
-        <div className="feature-card">
+        </Link>
+        <Link to="/shop" className="feature-card">
           <div className="feature-icon">🛒</div>
           <h3>商城兑换</h3>
           <p>用竞猜币兑换精美周边</p>
-        </div>
-        <div className="feature-card">
+        </Link>
+        <Link to="/hall-of-fame" className="feature-card">
           <div className="feature-icon">⭐</div>
           <h3>名人堂</h3>
           <p>见证历届明星选手风采</p>
-        </div>
+        </Link>
       </section>
 
       {user && (
