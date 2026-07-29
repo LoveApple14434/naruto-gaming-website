@@ -9,12 +9,14 @@ import BetsPage from './pages/BetsPage'
 import BracketEditorPage from './pages/admin/BracketEditorPage'
 import ShopPage from './pages/ShopPage'
 import HallOfFamePage from './pages/HallOfFamePage'
+import ContributorsPage from './pages/ContributorsPage'
 import MyBetsPage from './pages/MyBetsPage'
 import ProfilePage from './pages/ProfilePage'
 import AdminDashboard from './pages/admin/AdminDashboard'
 import AdminBrackets from './pages/admin/AdminBrackets'
 import AdminProducts from './pages/admin/AdminProducts'
 import AdminHallOfFame from './pages/admin/AdminHallOfFame'
+import AdminContributors from './pages/admin/AdminContributors'
 import AdminRedemptions from './pages/admin/AdminRedemptions'
 import AdminPlayers from './pages/admin/AdminPlayers'
 import AdminBets from './pages/admin/AdminBets'
@@ -43,6 +45,7 @@ function App() {
         <Route path="/bets" element={<BetsPage />} />
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/hall-of-fame" element={<HallOfFamePage />} />
+        <Route path="/contributors" element={<ContributorsPage />} />
         <Route path="/my-bets" element={<ProtectedRoute><MyBetsPage /></ProtectedRoute>} />
         <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
         <Route path="/admin" element={<ProtectedRoute moderatorAccess><AdminDashboard /></ProtectedRoute>} />
@@ -51,6 +54,7 @@ function App() {
         <Route path="/admin/brackets/:id/edit" element={<ProtectedRoute adminOnly><BracketEditorPage /></ProtectedRoute>} />
         <Route path="/admin/products" element={<ProtectedRoute adminOnly><AdminProducts /></ProtectedRoute>} />
         <Route path="/admin/hall-of-fame" element={<ProtectedRoute adminOnly><AdminHallOfFame /></ProtectedRoute>} />
+        <Route path="/admin/contributors" element={<ProtectedRoute adminOnly><AdminContributors /></ProtectedRoute>} />
         <Route path="/admin/redemptions" element={<ProtectedRoute adminOnly><AdminRedemptions /></ProtectedRoute>} />
         <Route path="/admin/announcements" element={<ProtectedRoute adminOnly><AdminAnnouncements /></ProtectedRoute>} />
         <Route path="/admin/checkins" element={<ProtectedRoute moderatorAccess><AdminCheckIns /></ProtectedRoute>} />

@@ -162,6 +162,18 @@ export const hallOfFameApi = {
     request<{ success: boolean }>(`/hall-of-fame/${id}`, { method: 'DELETE' }),
 };
 
+// Contributors
+export const contributorApi = {
+  list: () => request<import('../types').Contributor[]>('/contributors'),
+  listAll: () => request<import('../types').Contributor[]>('/contributors/all'),
+  create: (data: { name: string; amount?: string | null; message?: string | null; avatar?: string | null; order?: number; active?: boolean }) =>
+    request<import('../types').Contributor>('/contributors', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: string, data: { name?: string; amount?: string | null; message?: string | null; avatar?: string | null; order?: number; active?: boolean }) =>
+    request<import('../types').Contributor>(`/contributors/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  delete: (id: string) =>
+    request<{ success: boolean }>(`/contributors/${id}`, { method: 'DELETE' }),
+};
+
 // Announcements
 export const announcementApi = {
   list: () => request<import('../types').Announcement[]>('/announcements'),

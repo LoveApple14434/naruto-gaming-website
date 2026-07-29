@@ -288,6 +288,21 @@ model HallOfFame {
   @@map("hall_of_fame")
 }
 
+// ─── 贡献者（网页建设资金支持） ───
+model Contributor {
+  id        String   @id @default(uuid())
+  name      String
+  amount    String?  // 资助金额描述，如 "¥100"
+  message   String?  // 个人寄语
+  avatar    String?  // 头像 URL
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("contributors")
+}
+
 // ─── 签到活动 ───
 model CheckInEvent {
   id        String   @id @default(uuid())

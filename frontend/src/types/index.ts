@@ -159,6 +159,18 @@ export interface HallOfFameEntry {
   player?: Player;
 }
 
+// ─── 贡献者 ───
+export interface Contributor {
+  id: string;
+  name: string;
+  amount: string | null;
+  message: string | null;
+  avatar: string | null;
+  order: number;
+  active: boolean;
+  createdAt: string;
+}
+
 // ─── 签到 ───
 export interface CheckInDay {
   id: string;

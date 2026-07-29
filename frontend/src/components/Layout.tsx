@@ -47,6 +47,7 @@ export default function Layout() {
             <Link to="/bets">竞猜</Link>
             <Link to="/shop">商城</Link>
             <Link to="/hall-of-fame">名人堂</Link>
+            <Link to="/contributors">贡献者</Link>
             {user && (
               <>
                 <Link to="/my-bets">我的竞猜</Link>

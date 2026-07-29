@@ -15,6 +15,7 @@ export default function AdminDashboard() {
     { to: '/admin/products', label: '商品管理', icon: '🛒' },
     { to: '/admin/redemptions', label: '兑换审核', icon: '📦' },
     { to: '/admin/hall-of-fame', label: '名人堂管理', icon: '⭐' },
+    { to: '/admin/contributors', label: '贡献者管理', icon: '💝' },
   ];
 
   // 协助管理员能看到用户管理和签到管理
