@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import { useAuth } from '../store/AuthContext';
 import { announcementApi } from '../api/client';
 import type { Announcement } from '../types';
@@ -37,7 +38,32 @@ export default function HomePage() {
                   </span>
                 </summary>
                 <div className="announcement-content">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeRaw]}
+                    components={{
+                      img: ({ src, alt, ...props }) => {
+                        // 支持 Markdown 语法 ![alt](url =WIDTHx) 或 ![alt](url =WIDTHxHEIGHT)
+                        let width: number | undefined;
+                        let resolvedAlt = alt || '';
+                        const widthMatch = resolvedAlt.match(/^=(?:(\d+)x(\d+)|(\d+)x)\s*/);
+                        if (widthMatch) {
+                          width = parseInt(widthMatch[3] || widthMatch[1], 10);
+                          resolvedAlt = resolvedAlt.replace(/^=\S+\s*/, '');
+                        }
+                        return (
+                          <img
+                            src={src}
+                            alt={resolvedAlt || ''}
+                            width={width}
+                            style={width ? undefined : { maxWidth: '100%' }}
+                            loading="lazy"
+                            {...props}
+                          />
+                        );
+                      },
+                    }}
+                  >
                     {a.content}
                   </ReactMarkdown>
                 </div>
