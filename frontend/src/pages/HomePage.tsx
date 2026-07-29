@@ -89,7 +89,7 @@ export default function HomePage() {
       </section>
 
       <section className="features-section">
-        <Link to="/brackets" className="feature-card">
+        <Link to="/bets" className="feature-card">
           <div className="feature-icon">🏆</div>
           <h3>赛事竞猜</h3>
           <p>参与比赛竞猜，赢取竞猜币</p>
