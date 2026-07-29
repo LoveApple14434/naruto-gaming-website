@@ -73,7 +73,7 @@ export default function Layout() {
         <Outlet />
       </main>
       <footer className="app-footer">
-        <p>&copy; 2026 火影忍者手游比赛平台</p>
+        <p>&copy; LoveApple14434 2026</p>
       </footer>
 
       {showCheckin && <CheckInModal onClose={() => setShowCheckin(false)} />}
