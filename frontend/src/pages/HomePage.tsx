@@ -51,9 +51,13 @@ export default function HomePage() {
                           width = parseInt(widthMatch[3] || widthMatch[1], 10);
                           resolvedAlt = resolvedAlt.replace(/^=\S+\s*/, '');
                         }
+                        // 补全 /naruto 前缀，确保 SPA 切换页面时图片路径正确
+                        const resolvedSrc = src?.startsWith('/uploads/')
+                          ? `/naruto${src}`
+                          : src;
                         return (
                           <img
-                            src={src}
+                            src={resolvedSrc}
                             alt={resolvedAlt || ''}
                             width={width}
                             style={width ? undefined : { maxWidth: '100%' }}
